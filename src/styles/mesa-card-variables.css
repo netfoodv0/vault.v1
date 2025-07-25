@@ -1,0 +1,252 @@
+/* ========================================
+   VARIÁVEIS CSS - MESA CARD
+   Design System Vault v1.0
+   ======================================== */
+
+:root {
+  /* ========================================
+     CORES PRINCIPAIS
+     ======================================== */
+  
+  /* Cor primária da marca (roxo) */
+  --mesa-card-primary: #542583;
+  --mesa-card-primary-hover: #7209bd;
+  
+  /* Cores de status */
+  --mesa-card-status-pending: #ef4444;      /* A cobrar */
+  --mesa-card-status-pending-hover: #dc2626;
+  --mesa-card-status-paid: #10b981;         /* Pago */
+  --mesa-card-status-paid-hover: #059669;
+  --mesa-card-status-warning: rgba(220, 38, 38, 0.6); /* Status badge */
+  
+  /* Cores neutras */
+  --mesa-card-text-primary: #ffffff;
+  --mesa-card-text-secondary: rgba(255, 255, 255, 0.8);
+  --mesa-card-divider: #d1d5db;
+  
+  /* ========================================
+     DIMENSÕES E ESPAÇAMENTOS
+     ======================================== */
+  
+  /* Dimensões do card */
+  --mesa-card-width: 100%;
+  --mesa-card-height: 180px;
+  --mesa-card-border-radius: 8px;
+  
+  /* Padding interno */
+  --mesa-card-padding-horizontal: 16px;
+  --mesa-card-padding-vertical: 8px;
+  
+  /* Espaçamentos */
+  --mesa-card-gap-small: 2px;
+  --mesa-card-gap-medium: 8px;
+  --mesa-card-gap-large: 16px;
+  
+  /* ========================================
+     TIPOGRAFIA
+     ======================================== */
+  
+  /* Tamanhos de fonte */
+  --mesa-card-font-size-xs: 11px;
+  --mesa-card-font-size-sm: 14px;
+  --mesa-card-font-size-base: 16px;
+  --mesa-card-font-size-lg: 18px;
+  
+  /* Pesos de fonte */
+  --mesa-card-font-weight-normal: 400;
+  --mesa-card-font-weight-medium: 500;
+  --mesa-card-font-weight-semibold: 600;
+  --mesa-card-font-weight-bold: 700;
+  
+  /* ========================================
+     LAYOUT E ESTRUTURA
+     ======================================== */
+  
+  /* Proporções do card */
+  --mesa-card-header-height: 25%;
+  --mesa-card-content-height: 75%;
+  --mesa-card-divider-height: 1px;
+  
+  /* Grid de mesas */
+  --mesa-card-grid-columns: 3;
+  --mesa-card-grid-gap: 32px;
+  
+  /* ========================================
+     BOTÕES E INTERAÇÕES
+     ======================================== */
+  
+  /* Dimensões dos botões */
+  --mesa-card-button-height: 36px;
+  --mesa-card-button-padding: 6px 12px;
+  --mesa-card-button-border-radius: 6px;
+  
+  /* Ícones */
+  --mesa-card-icon-size: 24px;
+  --mesa-card-icon-size-small: 16px;
+  
+  /* ========================================
+     ANIMAÇÕES E TRANSITIONS
+     ======================================== */
+  
+  --mesa-card-transition-fast: 0.2s;
+  --mesa-card-transition-medium: 0.3s;
+  --mesa-card-transition-slow: 0.4s;
+  
+  /* ========================================
+     STATUS BADGES
+     ======================================== */
+  
+  --mesa-card-badge-padding: 2px 6px;
+  --mesa-card-badge-border-radius: 100px;
+  --mesa-card-badge-font-size: 11px;
+  
+  /* ========================================
+     RESPONSIVIDADE
+     ======================================== */
+  
+  /* Breakpoints para grid */
+  --mesa-card-grid-mobile: 1;
+  --mesa-card-grid-tablet: 2;
+  --mesa-card-grid-desktop: 3;
+  
+  /* ========================================
+     ESTADOS E VARIAÇÕES
+     ======================================== */
+  
+  /* Estados do card */
+  --mesa-card-state-empty: #f3f4f6;
+  --mesa-card-state-occupied: var(--mesa-card-primary);
+  --mesa-card-state-reserved: #f59e0b;
+  
+  /* Opacidades */
+  --mesa-card-opacity-disabled: 0.6;
+  --mesa-card-opacity-hover: 0.9;
+  
+  /* ========================================
+     SOMBRAS E EFEITOS
+     ======================================== */
+  
+  --mesa-card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --mesa-card-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  
+  /* ========================================
+     Z-INDEX
+     ======================================== */
+  
+  --mesa-card-z-index-base: 1;
+  --mesa-card-z-index-hover: 2;
+  --mesa-card-z-index-modal: 1000;
+}
+
+/* ========================================
+   CLASSES UTILITÁRIAS
+   ======================================== */
+
+.mesa-card {
+  width: var(--mesa-card-width);
+  height: var(--mesa-card-height);
+  background-color: var(--mesa-card-primary);
+  border-radius: var(--mesa-card-border-radius);
+  display: flex;
+  flex-direction: column;
+  color: var(--mesa-card-text-primary);
+  font-size: var(--mesa-card-font-size-base);
+  font-weight: var(--mesa-card-font-weight-medium);
+  box-shadow: var(--mesa-card-shadow);
+  transition: box-shadow var(--mesa-card-transition-fast);
+}
+
+.mesa-card:hover {
+  box-shadow: var(--mesa-card-shadow-hover);
+}
+
+.mesa-card-header {
+  height: var(--mesa-card-header-height);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: var(--mesa-card-padding-horizontal);
+  padding-right: var(--mesa-card-padding-horizontal);
+  position: relative;
+}
+
+.mesa-card-content {
+  height: var(--mesa-card-content-height);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: var(--mesa-card-padding-horizontal);
+  padding-right: var(--mesa-card-padding-horizontal);
+  padding-top: 1px;
+  padding-bottom: var(--mesa-card-padding-vertical);
+}
+
+.mesa-card-divider {
+  height: var(--mesa-card-divider-height);
+  background-color: var(--mesa-card-divider);
+  width: 100%;
+}
+
+.mesa-card-button {
+  background-color: var(--mesa-card-status-pending);
+  color: var(--mesa-card-text-primary);
+  border: none;
+  border-radius: var(--mesa-card-button-border-radius);
+  padding: var(--mesa-card-button-padding);
+  font-size: var(--mesa-card-font-size-sm);
+  font-weight: var(--mesa-card-font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--mesa-card-transition-fast);
+  height: var(--mesa-card-button-height);
+}
+
+.mesa-card-button:hover {
+  background-color: var(--mesa-card-status-pending-hover);
+}
+
+.mesa-card-button--success {
+  background-color: var(--mesa-card-status-paid);
+}
+
+.mesa-card-button--success:hover {
+  background-color: var(--mesa-card-status-paid-hover);
+}
+
+.mesa-card-badge {
+  background-color: var(--mesa-card-status-warning);
+  padding: var(--mesa-card-badge-padding);
+  border-radius: var(--mesa-card-badge-border-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  font-size: var(--mesa-card-badge-font-size);
+  font-weight: var(--mesa-card-font-weight-medium);
+  color: var(--mesa-card-text-primary);
+}
+
+/* ========================================
+   RESPONSIVIDADE
+   ======================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --mesa-card-grid-columns: var(--mesa-card-grid-mobile);
+    --mesa-card-grid-gap: 16px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    --mesa-card-grid-columns: var(--mesa-card-grid-tablet);
+    --mesa-card-grid-gap: 24px;
+  }
+}
+
+@media (min-width: 1025px) {
+  :root {
+    --mesa-card-grid-columns: var(--mesa-card-grid-desktop);
+    --mesa-card-grid-gap: 32px;
+  }
+} 

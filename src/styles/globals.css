@@ -1,0 +1,672 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevenir layout shift - Scrollbar sempre visível */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Garantir que o scroll seja consistente em todas as páginas */
+.main-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+/* Prevenir layout shift em containers */
+.page-container {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Garantir que todas as páginas tenham o mesmo comportamento */
+.min-h-screen {
+  overflow-x: hidden;
+}
+
+/* Customizar scrollbar para ser sempre visível */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Para Firefox */
+.main-content {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+
+
+/* Fonte iFood RC Textos */
+@font-face {
+    font-family: 'iFoodFont';
+    src: url('/fonts/ifood-rc-textos/iFoodRCTextos-Thin.woff2') format('woff2'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Thin.woff') format('woff'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'iFoodFont';
+    src: url('/fonts/ifood-rc-textos/iFoodRCTextos-Light.woff2') format('woff2'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Light.woff') format('woff'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'iFoodFont';
+    src: url('/fonts/ifood-rc-textos/iFoodRCTextos-Regular.woff2') format('woff2'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Regular.woff') format('woff'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'iFoodFont';
+    src: url('/fonts/ifood-rc-textos/iFoodRCTextos-Medium.woff2') format('woff2'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Medium.woff') format('woff'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'iFoodFont';
+    src: url('/fonts/ifood-rc-textos/iFoodRCTextos-Bold.woff2') format('woff2'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Bold.woff') format('woff'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'iFoodFont';
+    src: url('/fonts/ifood-rc-textos/iFoodRCTextos-ExtraBold.woff2') format('woff2'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-ExtraBold.woff') format('woff'),
+         url('/fonts/ifood-rc-textos/iFoodRCTextos-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Animações para o mapa de entregas */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInZoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
+
+:root {
+  --font-ifood: 'iFoodFont', sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-ifood) !important;
+  }
+  
+  body {
+    font-family: var(--font-ifood) !important;
+  }
+  
+  * {
+    font-family: var(--font-ifood) !important;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-outline {
+    @apply border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .input-field {
+    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow border border-gray-200 p-6;
+  }
+}
+
+/* Customização dos inputs de time para usar cor roxa */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(19%) sepia(95%) saturate(5718%) hue-rotate(274deg) brightness(91%) contrast(96%);
+}
+
+/* Customização do dropdown de time */
+input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+  color: #374151;
+}
+
+input[type="time"]::-webkit-datetime-edit-hour-field:focus,
+input[type="time"]::-webkit-datetime-edit-minute-field:focus {
+  background-color: #542583;
+  color: white;
+  border-radius: 2px;
+}
+
+/* Customização adicional para Firefox */
+input[type="time"] {
+  color-scheme: light;
+}
+
+/* Estilo para os elementos selecionados no dropdown */
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field {
+  transition: all 0.2s ease;
+}
+
+/* Customização do popup de seleção de horário */
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(19%) sepia(95%) saturate(5718%) hue-rotate(274deg) brightness(91%) contrast(96%);
+  opacity: 0.8;
+}
+
+/* Animações para modais e spinners */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes modalEnter {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Classes utilitárias para animações */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.modal-enter {
+  animation: modalEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Estilos específicos para Google Maps */
+.gm-style-iw {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.gm-style-iw-c {
+  border-radius: 8px;
+  padding: 0;
+}
+
+.gm-style-iw-d {
+  overflow: hidden !important;
+}
+
+/* Customizar controles do Google Maps */
+.gm-bundled-control {
+  margin: 8px !important;
+}
+
+.gm-bundled-control > div {
+  border-radius: 6px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ===== COMPONENTES DE PRODUTO ===== */
+
+/* Product List */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.product-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-category__title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+  text-align: left;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Estilo para títulos de seção na página da loja */
+.section-title {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Container principal para limitar largura da página da loja */
+.page-content-container {
+  max-width: 720px;
+  margin: 0 auto 200px auto;
+  width: 100%;
+  border-left: 1px solid #d1d5db;
+  border-right: 1px solid #d1d5db;
+  padding-top: 5px;
+}
+
+/* Container para cabeçalhos e rodapés sem bordas */
+.page-content-container-no-border {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Container específico para cabeçalhos e rodapés fixos */
+.page-content-container-fixed {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Margem superior para banner */
+.banner-top-margin {
+  margin-top: 100px;
+}
+
+/* Responsividade para a limitação de largura */
+@media (max-width: 768px) {
+  .page-content-container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding-top: 0 !important;
+  }
+  
+  .page-content-container-no-border {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .page-content-container-fixed {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  .product-list {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .product-category__title {
+    max-width: 100% !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+  }
+  
+  .section-title {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .banner-top-margin {
+    margin-top: 0 !important;
+  }
+  
+  /* Remove border-radius do banner no mobile */
+  .rounded-t-2xl {
+    border-radius: 0 !important;
+  }
+  
+  /* Remove margens extras no mobile para páginas de produto */
+  [style*="marginTop: '200px'"] {
+    margin-top: 0 !important;
+  }
+  
+  [style*="marginBottom: '200px'"] {
+    margin-bottom: 70px !important;
+  }
+}
+
+.product-category__items {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Product Card */
+.product-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 5px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.product-card__content:hover {
+  background-color: #f9fafb;
+}
+
+.product-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card__title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 8px;
+  max-width: 230px;
+  line-height: 1.4;
+}
+
+.product-card__description {
+  font-size: 14px;
+  color: #6b7280;
+  max-width: 230px;
+  max-height: 60px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  margin-bottom: 0;
+}
+
+.product-card__price {
+  font-size: 13px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.product-card__image {
+  flex-shrink: 0;
+}
+
+.product-card__image-element {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.product-card__divider {
+  height: 1px;
+  background-color: #d1d5db;
+  margin: 10px 16px;
+  opacity: 0.8;
+}
+
+/* Responsividade para Google Maps */
+@media (max-width: 640px) {
+  .gm-bundled-control {
+    margin: 4px !important;
+  }
+}
+
+/* Estilos para scrollbar customizada do card de entrega */
+.delivery-card-scrollbar {
+  /* Garante direção da esquerda para direita (scrollbar à direita) */
+  direction: ltr;
+  /* Força alinhamento de texto à esquerda para manter scrollbar à direita */
+  text-align: left;
+  /* Garante que conteúdo comece da esquerda */
+  writing-mode: horizontal-tb;
+}
+
+.delivery-card-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.delivery-card-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.delivery-card-scrollbar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.delivery-card-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Para Firefox */
+.delivery-card-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+/* Garante que todos os elementos filhos mantenham a direção correta */
+.delivery-card-scrollbar * {
+  direction: ltr;
+  text-align: inherit;
+}
+
+/* Esconder botão X do InfoWindow do Google Maps */
+.gm-style-iw-c button {
+  display: none !important;
+}
+
+.gm-style-iw-tc {
+  display: none !important;
+}
+
+/* Customizar InfoWindow para área de entrega */
+.gm-style-iw {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.gm-style-iw-d {
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+/* Remover fundo azul do autocomplete/autofill dos inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #111827 !important;
+  background-color: white !important;
+  background-image: none !important;
+}
+
+/* Para Firefox */
+input:-moz-autofill {
+  background-color: white !important;
+  background-image: none !important;
+  color: #111827 !important;
+}
+
+/* Remover fundo azul em todos os estados do input */
+input[type="text"]:-webkit-autofill,
+input[type="text"]:-webkit-autofill:hover,
+input[type="text"]:-webkit-autofill:focus,
+input[type="text"]:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+/* Scrollbar customizada para o modal de pedidos */
+.custom-scrollbar {
+  --sb-track-color: #e9e9e9;
+  --sb-thumb-color: #c0c0c0;
+  --sb-size: 7px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 18px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 18px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .custom-scrollbar {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
+
+/* Animação para banner rolante */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll-left {
+  animation: scroll-left 20s linear infinite;
+}
+
+/* Esconder scrollbar para galeria horizontal */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Esconder scrollbar para skeleton do carrossel */
+.skeleton-carousel {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.skeleton-carousel::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Animação pulse para indicador de status da loja */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
