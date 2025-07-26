@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { MainSidebar } from './MainSidebar'
+import { Sidebar } from './Sidebar'
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <ProtectedRoute>
       <div className="flex flex-1" style={{ backgroundColor: '#ececec' }}>
-        <MainSidebar activeRoute={pathname} />
+        <Sidebar />
         <main className="flex-1 p-8">
           {children}
         </main>

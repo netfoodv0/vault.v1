@@ -3,7 +3,7 @@ import React from 'react';
 type ReportSummaryProps = {
   title: string;
   data: {
-    label: string;
+    label: string | React.ReactNode;
     value: string | number;
     color?: string;
     icon?: React.ReactNode;

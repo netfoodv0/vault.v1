@@ -343,8 +343,14 @@ export default function LoginPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => {
+                const target = e.target as HTMLElement
+                target.style.color = '#6b7280'
+              }}
+              onMouseLeave={(e) => {
+                const target = e.target as HTMLElement
+                target.style.color = '#9ca3af'
+              }}
             >
               ×
             </button>
@@ -470,12 +476,14 @@ export default function LoginPage() {
                 }}
                 onMouseEnter={(e) => {
                   if (!isResettingPassword) {
-                    e.target.style.backgroundColor = '#f9fafb'
+                    const target = e.target as HTMLElement
+                    target.style.backgroundColor = '#f9fafb'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isResettingPassword) {
-                    e.target.style.backgroundColor = 'transparent'
+                    const target = e.target as HTMLElement
+                    target.style.backgroundColor = 'transparent'
                   }
                 }}
               >
@@ -502,12 +510,14 @@ export default function LoginPage() {
                 }}
                 onMouseEnter={(e) => {
                   if (!isResettingPassword && resetEmail.trim()) {
-                    e.target.style.backgroundColor = '#7209bd'
+                    const target = e.target as HTMLElement
+                    target.style.backgroundColor = '#7209bd'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isResettingPassword && resetEmail.trim()) {
-                    e.target.style.backgroundColor = '#542583'
+                    const target = e.target as HTMLElement
+                    target.style.backgroundColor = '#542583'
                   }
                 }}
               >

@@ -13,6 +13,16 @@ import { useConfiguracaoEntrega } from '@/hooks/useConfiguracaoEntrega'
 import DeliveryMap from '@/components/maps/DeliveryMap'
 import toast from 'react-hot-toast'
 
+// Função utilitária para corrigir tipagem de eventos
+const getEventTarget = (e: React.MouseEvent | React.FocusEvent): HTMLElement => {
+  return e.target as HTMLElement
+}
+
+// Função utilitária para corrigir tipagem de eventos com propriedade disabled
+const getEventTargetWithDisabled = (e: React.MouseEvent): HTMLButtonElement => {
+  return e.target as HTMLButtonElement
+}
+
 export default function AdministrarPage() {
   const pathname = usePathname()
   const isPedidosActive = pathname === '/pedidos'
@@ -120,13 +130,13 @@ export default function AdministrarPage() {
   const [nomeMotoboy, setNomeMotoboy] = useState('')
   const [whatsappMotoboy, setWhatsappMotoboy] = useState('')
   const [motoboyAtivo, setMotoboyAtivo] = useState(true)
-  const [editandoMotoboy, setEditandoMotoboy] = useState(null)
+  const [editandoMotoboy, setEditandoMotoboy] = useState<{ id: string; nome: string; whatsapp: string; ativo: boolean } | null>(null)
   const [showVisualizarMotoboyModal, setShowVisualizarMotoboyModal] = useState(false)
-  const [motoboyVisualizando, setMotoboyVisualizando] = useState(null)
+  const [motoboyVisualizando, setMotoboyVisualizando] = useState<{ id: string; nome: string; whatsapp: string; ativo: boolean } | null>(null)
 
   // Estados para modal de confirmação de exclusão de motoboy
   const [showConfirmarExclusaoMotoboyModal, setShowConfirmarExclusaoMotoboyModal] = useState(false)
-  const [motoboyParaExcluir, setMotoboyParaExcluir] = useState(null)
+  const [motoboyParaExcluir, setMotoboyParaExcluir] = useState<{ id: string; nome: string } | null>(null)
 
 
   // Funções de máscara
@@ -278,11 +288,11 @@ export default function AdministrarPage() {
   
   // Estados para modal de visualizar usuário
   const [showVisualizarUsuarioModal, setShowVisualizarUsuarioModal] = useState(false)
-  const [usuarioVisualizando, setUsuarioVisualizando] = useState(null)
+  const [usuarioVisualizando, setUsuarioVisualizando] = useState<{ id: string; name: string; email: string; role?: string; cpf?: string; whatsapp?: string } | null>(null)
   
   // Estados para modal de editar usuário
   const [showEditarUsuarioModal, setShowEditarUsuarioModal] = useState(false)
-  const [usuarioEditando, setUsuarioEditando] = useState(null)
+  const [usuarioEditando, setUsuarioEditando] = useState<{ id: string; name: string; email: string; role?: string; cpf?: string; whatsapp?: string } | null>(null)
   const [nomeCompletoEdit, setNomeCompletoEdit] = useState('')
   const [funcaoUsuarioEdit, setFuncaoUsuarioEdit] = useState('operador')
   const [emailUsuarioEdit, setEmailUsuarioEdit] = useState('')
@@ -292,7 +302,7 @@ export default function AdministrarPage() {
 
   // Estados para modal de confirmação de exclusão de usuário
   const [showConfirmarExclusaoUsuarioModal, setShowConfirmarExclusaoUsuarioModal] = useState(false)
-  const [usuarioParaExcluir, setUsuarioParaExcluir] = useState(null)
+  const [usuarioParaExcluir, setUsuarioParaExcluir] = useState<{ id: string; name: string } | null>(null)
   
 
   
@@ -329,8 +339,8 @@ export default function AdministrarPage() {
   const [distanciaRaio, setDistanciaRaio] = useState(1) // km
   const [tempoMaximo, setTempoMaximo] = useState('') // minutos
   const [precoRaio, setPrecoRaio] = useState('') // valor em reais
-  const [raiosEntrega, setRaiosEntrega] = useState<Array<{id: string; nome: string; raio: number; preco: number}>>([]) // lista de raios cadastrados (carregada do Firebase)
-  const [editandoRaio, setEditandoRaio] = useState(null) // raio sendo editado
+  const [raiosEntrega, setRaiosEntrega] = useState<Array<{id: number; distancia: number; tempoMaximo: number; preco: string; createdAt: Date}>>([]) // lista de raios cadastrados (carregada do Firebase)
+  const [editandoRaio, setEditandoRaio] = useState<{ id: number; distancia: number; tempoMaximo: number; preco: string } | null>(null) // raio sendo editado
   
   // Estados para valores dos campos de endereço
   const [valoresCampos, setValoresCampos] = useState({
@@ -904,7 +914,7 @@ export default function AdministrarPage() {
     setShowNovoMotoboyModal(true)
   }
 
-  const handleAbrirModalEditarMotoboy = (motoboy) => {
+  const handleAbrirModalEditarMotoboy = (motoboy: { id: string; nome: string; whatsapp: string; ativo: boolean }) => {
     setEditandoMotoboy(motoboy)
     setNomeMotoboy(motoboy.nome)
     setWhatsappMotoboy(motoboy.whatsapp)
@@ -953,7 +963,7 @@ export default function AdministrarPage() {
     }
   }
 
-  const handleRemoverMotoboy = async (motoboy) => {
+  const handleRemoverMotoboy = async (motoboy: { id: string; nome: string }) => {
     setMotoboyParaExcluir(motoboy)
     setShowConfirmarExclusaoMotoboyModal(true)
   }
@@ -975,7 +985,7 @@ export default function AdministrarPage() {
     setMotoboyParaExcluir(null)
   }
 
-  const handleAbrirModalVisualizarMotoboy = (motoboy) => {
+  const handleAbrirModalVisualizarMotoboy = (motoboy: { id: string; nome: string; whatsapp: string; ativo: boolean }) => {
     setMotoboyVisualizando(motoboy)
     setShowVisualizarMotoboyModal(true)
   }
@@ -985,7 +995,7 @@ export default function AdministrarPage() {
     setMotoboyVisualizando(null)
   }
 
-  const handleAbrirModalVisualizarUsuario = (usuario) => {
+  const handleAbrirModalVisualizarUsuario = (usuario: { id: string; name: string; email: string; role?: string }) => {
     setUsuarioVisualizando(usuario)
     setShowVisualizarUsuarioModal(true)
   }
@@ -995,13 +1005,13 @@ export default function AdministrarPage() {
     setUsuarioVisualizando(null)
   }
 
-  const handleAbrirModalEditarUsuario = (usuario) => {
+  const handleAbrirModalEditarUsuario = (usuario: { id: string; name: string; email: string; role?: string; cpf?: string; whatsapp?: string }) => {
     setUsuarioEditando(usuario)
     setNomeCompletoEdit(usuario.name)
-    setFuncaoUsuarioEdit(usuario.role)
+    setFuncaoUsuarioEdit(usuario.role || 'operador')
     setEmailUsuarioEdit(usuario.email)
-    setCpfUsuarioEdit(usuario.cpf)
-    setWhatsappUsuarioEdit(usuario.whatsapp)
+    setCpfUsuarioEdit(usuario.cpf || '')
+    setWhatsappUsuarioEdit(usuario.whatsapp || '')
     setShowEditarUsuarioModal(true)
   }
 
@@ -1027,6 +1037,8 @@ export default function AdministrarPage() {
       return
     }
 
+    if (!usuarioEditando) return
+    
     const success = await updateStoreUser(usuarioEditando.id, {
       name: nomeCompletoEdit.trim(),
       cpf: cpfUsuarioEdit.trim(),
@@ -1039,7 +1051,7 @@ export default function AdministrarPage() {
     }
   }
 
-  const handleExcluirUsuario = async (usuario) => {
+  const handleExcluirUsuario = async (usuario: { id: string; name: string }) => {
     setUsuarioParaExcluir(usuario)
     setShowConfirmarExclusaoUsuarioModal(true)
   }
@@ -1174,7 +1186,7 @@ export default function AdministrarPage() {
     setModalRaioEntregaAberto(true)
   }
 
-  const handleAbrirModalEditarRaio = (raio) => {
+  const handleAbrirModalEditarRaio = (raio: { id: number; distancia: number; tempoMaximo: number; preco: string }) => {
     setEditandoRaio(raio)
     setDistanciaRaio(raio.distancia)
     setTempoMaximo(raio.tempoMaximo.toString())
@@ -1215,7 +1227,7 @@ export default function AdministrarPage() {
     }
   }
 
-  const handleExcluirRaio = async (id) => {
+  const handleExcluirRaio = async (id: number) => {
     try {
       await excluirRaioEntrega(id)
     } catch (error) {
@@ -1387,12 +1399,12 @@ export default function AdministrarPage() {
                   }}
                   onMouseEnter={(e) => {
                     if (paginaAtiva !== 'dados-loja') {
-                      e.target.style.backgroundColor = '#f9fafb'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (paginaAtiva !== 'dados-loja') {
-                      e.target.style.backgroundColor = 'transparent'
+                      (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                     }
                   }}
                 >
@@ -1418,12 +1430,12 @@ export default function AdministrarPage() {
                   }}
                   onMouseEnter={(e) => {
                     if (paginaAtiva !== 'horarios') {
-                      e.target.style.backgroundColor = '#f9fafb'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (paginaAtiva !== 'horarios') {
-                      e.target.style.backgroundColor = 'transparent'
+                      (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                     }
                   }}
                 >
@@ -1449,12 +1461,12 @@ export default function AdministrarPage() {
                   }}
                   onMouseEnter={(e) => {
                     if (paginaAtiva !== 'entrega') {
-                      e.target.style.backgroundColor = '#f9fafb'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (paginaAtiva !== 'entrega') {
-                      e.target.style.backgroundColor = 'transparent'
+                      (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                     }
                   }}
                 >
@@ -1480,12 +1492,12 @@ export default function AdministrarPage() {
                   }}
                   onMouseEnter={(e) => {
                     if (paginaAtiva !== 'pagamento') {
-                      e.target.style.backgroundColor = '#f9fafb'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (paginaAtiva !== 'pagamento') {
-                      e.target.style.backgroundColor = 'transparent'
+                      (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                     }
                   }}
                 >
@@ -1511,12 +1523,12 @@ export default function AdministrarPage() {
                   }}
                   onMouseEnter={(e) => {
                     if (paginaAtiva !== 'motoboys') {
-                      e.target.style.backgroundColor = '#f9fafb'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (paginaAtiva !== 'motoboys') {
-                      e.target.style.backgroundColor = 'transparent'
+                      (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                     }
                   }}
                 >
@@ -1542,12 +1554,12 @@ export default function AdministrarPage() {
                   }}
                   onMouseEnter={(e) => {
                     if (paginaAtiva !== 'impressao') {
-                      e.target.style.backgroundColor = '#f9fafb'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (paginaAtiva !== 'impressao') {
-                      e.target.style.backgroundColor = 'transparent'
+                      (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                     }
                   }}
                 >
@@ -1574,12 +1586,12 @@ export default function AdministrarPage() {
                     }}
                     onMouseEnter={(e) => {
                       if (paginaAtiva !== 'usuarios') {
-                        e.target.style.backgroundColor = '#f9fafb'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (paginaAtiva !== 'usuarios') {
-                        e.target.style.backgroundColor = 'transparent'
+                        (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                       }
                     }}
                   >
@@ -1643,12 +1655,12 @@ export default function AdministrarPage() {
                       }}
                       onMouseEnter={(e) => {
                         if (!configLoading) {
-                          e.target.style.backgroundColor = '#7209bd'
+                          (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!configLoading) {
-                          e.target.style.backgroundColor = '#542583'
+                          (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                         }
                       }}
                     >
@@ -1897,10 +1909,10 @@ export default function AdministrarPage() {
                                 gap: '8px'
                               }}
                               onMouseEnter={(e) => {
-                                e.target.style.backgroundColor = '#7209bd'
+                                (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'
                               }}
                               onMouseLeave={(e) => {
-                                e.target.style.backgroundColor = '#542583'
+                                (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                               }}
                             >
                               <svg 
@@ -2115,12 +2127,12 @@ export default function AdministrarPage() {
                       }}
                       onMouseEnter={(e) => {
                         if (!configLoading) {
-                          e.target.style.backgroundColor = '#7209bd'
+                          (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!configLoading) {
-                          e.target.style.backgroundColor = '#542583'
+                          (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                         }
                       }}
                     >
@@ -2231,8 +2243,8 @@ export default function AdministrarPage() {
                             cursor: 'pointer',
                             transition: 'border-color 0.2s'
                           }}
-                          onMouseEnter={(e) => e.target.style.borderColor = '#542583'}
-                          onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}
+                          onMouseEnter={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                          onMouseLeave={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                         >
                           <span>{fusosHorarios.find(f => f.value === fusoSelecionado)?.cidade || 'Selecione'}</span>
                           <svg 
@@ -2290,12 +2302,12 @@ export default function AdministrarPage() {
                                 }}
                                 onMouseEnter={(e) => {
                                   if (fusoSelecionado !== fuso.value) {
-                                    e.target.style.backgroundColor = '#f9fafb'
+                                    (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                                   }
                                 }}
                                 onMouseLeave={(e) => {
                                   if (fusoSelecionado !== fuso.value) {
-                                    e.target.style.backgroundColor = 'transparent'
+                                    (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                                   }
                                 }}
                               >
@@ -2418,8 +2430,8 @@ export default function AdministrarPage() {
                                          outline: 'none',
                                          transition: 'border-color 0.2s'
                                        }}
-                                       onFocus={(e) => e.target.style.borderColor = '#542583'}
-                                       onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                                       onFocus={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                                       onBlur={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                                      />
                                      
                                      {/* Texto "até" */}
@@ -2453,8 +2465,8 @@ export default function AdministrarPage() {
                                          outline: 'none',
                                          transition: 'border-color 0.2s'
                                        }}
-                                       onFocus={(e) => e.target.style.borderColor = '#542583'}
-                                       onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                                       onFocus={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                                       onBlur={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                                      />
                                     
                                      {/* Botão Lixeira - Só mostra se há mais de 1 horário */}
@@ -2476,8 +2488,8 @@ export default function AdministrarPage() {
                                            borderRadius: '4px',
                                            transition: 'background-color 0.2s'
                                          }}
-                                         onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
-                                         onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                         onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f3f4f6'}
+                                         onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
                                          title="Remover horário"
                                        >
                                          <svg width="16" height="16" viewBox="0 0 24 24" fill="#6b7280">
@@ -2522,16 +2534,16 @@ export default function AdministrarPage() {
                                    }}
                                    onMouseEnter={(e) => {
                                      if (diaConfig.fechado) {
-                                       e.target.style.backgroundColor = '#b91c1c'
+                                       (e.target as HTMLButtonElement).style.backgroundColor = '#b91c1c'
                                      } else {
-                                       e.target.style.backgroundColor = '#f9fafb'
+                                       (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                                      }
                                    }}
                                    onMouseLeave={(e) => {
                                      if (diaConfig.fechado) {
-                                       e.target.style.backgroundColor = '#dc2626'
+                                       (e.target as HTMLButtonElement).style.backgroundColor = '#dc2626'
                                      } else {
-                                       e.target.style.backgroundColor = 'transparent'
+                                       (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                                      }
                                    }}
                                  >
@@ -2576,8 +2588,8 @@ export default function AdministrarPage() {
                                          cursor: 'pointer',
                                          transition: 'background-color 0.2s'
                                        }}
-                                       onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                                       onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                       onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                                       onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
                                      >
                                        Copiar horário acima
                                      </button>
@@ -2604,8 +2616,8 @@ export default function AdministrarPage() {
                                          gap: '6px',
                                          transition: 'background-color 0.2s'
                                        }}
-                                       onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                                       onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                                       onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                                       onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                                      >
                                        <span style={{ fontSize: '16px', lineHeight: '1' }}>+</span>
                                        Novo período
@@ -2660,8 +2672,8 @@ export default function AdministrarPage() {
                         cursor: 'pointer',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                     >
                       Salvar configurações
                     </button>
@@ -2879,19 +2891,19 @@ export default function AdministrarPage() {
                                     transition: 'all 0.2s'
                                   }}
                                   onFocus={(e) => {
-                                    e.target.style.outline = 'none'
-                                    e.target.style.borderColor = 'transparent'
-                                    e.target.style.boxShadow = '0 0 0 2px #542583'
+                                    getEventTarget(e).style.outline = 'none'
+                                    getEventTarget(e).style.borderColor = 'transparent'
+                                    getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                                   }}
                                   onBlur={(e) => {
-                                    e.target.style.boxShadow = 'none'
+                                    getEventTarget(e).style.boxShadow = 'none'
                                     // Restaurar cor da borda baseada na validação
                                     if (chavePix && !validarChavePix(chavePix, tipoChavePix)) {
-                                      e.target.style.borderColor = '#dc2626'
+                                      getEventTarget(e).style.borderColor = '#dc2626'
                                     } else if (chavePix && validarChavePix(chavePix, tipoChavePix)) {
-                                      e.target.style.borderColor = '#059669'
+                                      getEventTarget(e).style.borderColor = '#059669'
                                     } else {
-                                      e.target.style.borderColor = '#d1d5db'
+                                      getEventTarget(e).style.borderColor = '#d1d5db'
                                     }
                                   }}
                                                                   />
@@ -2948,10 +2960,10 @@ export default function AdministrarPage() {
                                       transition: 'all 0.2s'
                                     }}
                                     onMouseEnter={(e) => {
-                                      e.target.style.background = '#e9d5ff'
+                                      (e.target as HTMLElement).style.background = '#e9d5ff'
                                     }}
                                     onMouseLeave={(e) => {
-                                      e.target.style.background = '#f3e8ff'
+                                      (e.target as HTMLElement).style.background = '#f3e8ff'
                                     }}
                                   >
                                     <span>{tipoChavePix}</span>
@@ -3014,12 +3026,12 @@ export default function AdministrarPage() {
                                           }}
                                           onMouseEnter={(e) => {
                                             if (tipoChavePix !== tipo) {
-                                              e.target.style.backgroundColor = '#e9d5ff'
+                                              (e.target as HTMLButtonElement).style.backgroundColor = '#e9d5ff'
                                             }
                                           }}
                                           onMouseLeave={(e) => {
                                             if (tipoChavePix !== tipo) {
-                                              e.target.style.backgroundColor = 'transparent'
+                                              (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                                             }
                                           }}
                                         >
@@ -3059,13 +3071,13 @@ export default function AdministrarPage() {
                                   transition: 'all 0.2s'
                                 }}
                                 onFocus={(e) => {
-                                  e.target.style.outline = 'none'
-                                  e.target.style.borderColor = 'transparent'
-                                  e.target.style.boxShadow = '0 0 0 2px #542583'
+                                  getEventTarget(e).style.outline = 'none'
+                                  getEventTarget(e).style.borderColor = 'transparent'
+                                  getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                                 }}
                                 onBlur={(e) => {
-                                  e.target.style.borderColor = '#d1d5db'
-                                  e.target.style.boxShadow = 'none'
+                                  getEventTarget(e).style.borderColor = '#d1d5db'
+                                  getEventTarget(e).style.boxShadow = 'none'
                                 }}
                               />
                             </div>
@@ -3097,13 +3109,13 @@ export default function AdministrarPage() {
                                   transition: 'all 0.2s'
                                 }}
                                 onFocus={(e) => {
-                                  e.target.style.outline = 'none'
-                                  e.target.style.borderColor = 'transparent'
-                                  e.target.style.boxShadow = '0 0 0 2px #542583'
+                                  getEventTarget(e).style.outline = 'none'
+                                  getEventTarget(e).style.borderColor = 'transparent'
+                                  getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                                 }}
                                 onBlur={(e) => {
-                                  e.target.style.borderColor = '#d1d5db'
-                                  e.target.style.boxShadow = 'none'
+                                  getEventTarget(e).style.borderColor = '#d1d5db'
+                                  getEventTarget(e).style.boxShadow = 'none'
                                 }}
                               />
                             </div>
@@ -3165,8 +3177,8 @@ export default function AdministrarPage() {
                             gap: '6px',
                             transition: 'background-color 0.2s'
                           }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                          onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                          onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                         >
                           <span style={{ fontSize: '16px', lineHeight: '1' }}>+</span>
                           Nova bandeira
@@ -3410,8 +3422,8 @@ export default function AdministrarPage() {
                                       borderRadius: '3px',
                                       transition: 'background-color 0.2s'
                                     }}
-                                    onMouseEnter={(e) => e.target.style.backgroundColor = '#fee2e2'}
-                                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                    onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#fee2e2'}
+                                    onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
                                     title="Remover bandeira"
                                   >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -3654,8 +3666,8 @@ export default function AdministrarPage() {
                                       borderRadius: '3px',
                                       transition: 'background-color 0.2s'
                                     }}
-                                    onMouseEnter={(e) => e.target.style.backgroundColor = '#fee2e2'}
-                                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                    onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#fee2e2'}
+                                    onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
                                     title="Remover bandeira"
                                   >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -3722,7 +3734,10 @@ export default function AdministrarPage() {
                       })()
                     }
                     raiosEntrega={configuracaoEntrega?.raiosEntrega || raiosEntrega}
-                    onBuscarEndereco={setBuscarEnderecoNoMapa}
+                    onBuscarEndereco={(endereco: string) => {
+                      // Aqui você pode implementar a lógica para buscar o endereço
+                      console.log('Buscando endereço:', endereco)
+                    }}
                     tipoCalculoAtivo={calculoEntregaSelecionado as 'distancia_linha' | 'distancia_rota' | 'bairro'}
                     className="w-full h-full"
                   />
@@ -3773,12 +3788,12 @@ export default function AdministrarPage() {
                           }}
                           onMouseEnter={(e) => {
                             if (secaoAtiva !== 'sessao-entrega') {
-                              e.target.style.backgroundColor = '#f9fafb'
+                              (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (secaoAtiva !== 'sessao-entrega') {
-                              e.target.style.backgroundColor = 'transparent'
+                              (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                             }
                           }}
                           onClick={() => {
@@ -3804,12 +3819,12 @@ export default function AdministrarPage() {
                           }}
                           onMouseEnter={(e) => {
                             if (secaoAtiva !== 'endereco') {
-                              e.target.style.backgroundColor = '#f9fafb'
+                              (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (secaoAtiva !== 'endereco') {
-                              e.target.style.backgroundColor = 'transparent'
+                              (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                             }
                           }}
                           onClick={() => {
@@ -3885,8 +3900,8 @@ export default function AdministrarPage() {
                                 cursor: 'pointer',
                                 transition: 'border-color 0.2s'
                               }}
-                              onMouseEnter={(e) => e.target.style.borderColor = '#542583'}
-                              onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}
+                              onMouseEnter={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                              onMouseLeave={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                             >
                               <span>{opcoesCalculoEntrega.find(o => o.value === calculoEntregaSelecionado)?.label || 'Selecione'}</span>
                               <svg 
@@ -3953,12 +3968,12 @@ export default function AdministrarPage() {
                                     }}
                                     onMouseEnter={(e) => {
                                       if (calculoEntregaSelecionado !== opcao.value) {
-                                        e.target.style.backgroundColor = '#f9fafb'
+                                        (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                                       }
                                     }}
                                     onMouseLeave={(e) => {
                                       if (calculoEntregaSelecionado !== opcao.value) {
-                                        e.target.style.backgroundColor = 'transparent'
+                                        (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                                       }
                                     }}
                                   >
@@ -4095,8 +4110,8 @@ export default function AdministrarPage() {
                                 width: '100%',
                                 justifyContent: 'center'
                               }}
-                              onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                              onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                              onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                              onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                             >
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="10"/>
@@ -4189,8 +4204,8 @@ export default function AdministrarPage() {
                                               justifyContent: 'center',
                                               transition: 'background-color 0.2s'
                                             }}
-                                            onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
-                                            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                            onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#e5e7eb'}
+                                            onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
                                             title="Editar raio"
                                           >
                                             <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#6b7280">
@@ -4212,8 +4227,8 @@ export default function AdministrarPage() {
                                               justifyContent: 'center',
                                               transition: 'background-color 0.2s'
                                             }}
-                                            onMouseEnter={(e) => e.target.style.backgroundColor = '#fee2e2'}
-                                            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                                            onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#fee2e2'}
+                                            onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
                                             title="Excluir raio"
                                           >
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -4279,8 +4294,8 @@ export default function AdministrarPage() {
                                 alignItems: 'center',
                                 justifyContent: 'center'
                               }}
-                              onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                              onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                              onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                              onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                             >
                                 Salvar
                             </button>
@@ -4702,8 +4717,8 @@ export default function AdministrarPage() {
                                     cursor: 'pointer',
                                     transition: 'all 0.2s'
                                   }}
-                                  onMouseEnter={(e) => e.target.style.borderColor = '#542583'}
-                                  onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}
+                                                                     onMouseEnter={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                                   onMouseLeave={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                                 >
                                   <span>{paisSelecionado}</span>
                                   <svg 
@@ -4761,12 +4776,12 @@ export default function AdministrarPage() {
                                         }}
                                         onMouseEnter={(e) => {
                                           if (paisSelecionado !== pais) {
-                                            e.target.style.backgroundColor = '#f9fafb'
+                                            (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                                           }
                                         }}
                                         onMouseLeave={(e) => {
                                           if (paisSelecionado !== pais) {
-                                            e.target.style.backgroundColor = 'transparent'
+                                            (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                                           }
                                         }}
                                       >
@@ -4806,7 +4821,7 @@ export default function AdministrarPage() {
                                   }}
                                   onFocus={() => setCamposFocados(prev => ({ ...prev, cep: true }))}
                                   onBlur={() => setCamposFocados(prev => ({ ...prev, cep: false }))}
-                                  maxLength="9"
+                                  maxLength={9}
                                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                                     errosCampos.cep ? 'border-red-500' : 'border-gray-300'
                                   }`}
@@ -4867,8 +4882,8 @@ export default function AdministrarPage() {
                         cursor: 'pointer',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                     >
                       Salvar configurações
                     </button>
@@ -4931,8 +4946,8 @@ export default function AdministrarPage() {
                             gap: '6px',
                             transition: 'background-color 0.2s'
                           }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                          onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                          onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                         >
                           <span style={{ fontSize: '16px', lineHeight: '1' }}>+</span>
                           Novo motoboy
@@ -5054,8 +5069,8 @@ export default function AdministrarPage() {
                               cursor: 'pointer',
                               transition: 'background-color 0.2s'
                             }}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                            onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                            onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'white'}
                           >
                             {/* Nome */}
                             <div style={{ 
@@ -5221,8 +5236,8 @@ export default function AdministrarPage() {
                         cursor: 'pointer',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                     >
                       Salvar configurações
                     </button>
@@ -5795,8 +5810,8 @@ export default function AdministrarPage() {
                         cursor: 'pointer',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                     >
                       Salvar configurações
                     </button>
@@ -5851,8 +5866,8 @@ export default function AdministrarPage() {
                         gap: '6px',
                         transition: 'background-color 0.2s'
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#7209bd'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#542583'}
+                      onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'}
+                      onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#542583'}
                     >
                       <span style={{ fontSize: '16px', lineHeight: '1' }}>+</span>
                       Novo usuário
@@ -5953,8 +5968,8 @@ export default function AdministrarPage() {
                             transition: 'background-color 0.2s',
                             height: '48px'
                           }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                          onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                          onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'white'}
                           onClick={() => handleAbrirModalVisualizarUsuario(usuario)}
                         >
                           <div style={{
@@ -6009,8 +6024,8 @@ export default function AdministrarPage() {
                                 color: 'rgb(107, 114, 128)',
                                 transition: 'color 0.2s'
                               }}
-                              onMouseEnter={(e) => e.target.style.color = 'rgb(55, 65, 81)'}
-                              onMouseLeave={(e) => e.target.style.color = 'rgb(107, 114, 128)'}
+                              onMouseEnter={(e) => getEventTarget(e).style.color = 'rgb(55, 65, 81)'}
+                              onMouseLeave={(e) => getEventTarget(e).style.color = 'rgb(107, 114, 128)'}
                             >
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -6034,8 +6049,8 @@ export default function AdministrarPage() {
                                 color: 'rgb(107, 114, 128)',
                                 transition: 'color 0.2s'
                               }}
-                              onMouseEnter={(e) => e.target.style.color = 'rgb(55, 65, 81)'}
-                              onMouseLeave={(e) => e.target.style.color = 'rgb(107, 114, 128)'}
+                              onMouseEnter={(e) => getEventTarget(e).style.color = 'rgb(55, 65, 81)'}
+                              onMouseLeave={(e) => getEventTarget(e).style.color = 'rgb(107, 114, 128)'}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
                                 <path d="M360-600v-80h360v80H360Zm0 120v-80h360v80H360ZM560-80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm263-224 37-39-37-37-38 38 38 38ZM240-80q-50 0-85-35t-35-85v-120h120v-560h600v361q-20-2-40.5 1.5T760-505v-295H320v480h240l-80 80v160H240Z"/>
@@ -6058,8 +6073,8 @@ export default function AdministrarPage() {
                                 color: 'rgb(107, 114, 128)',
                                 transition: 'color 0.2s'
                               }}
-                              onMouseEnter={(e) => e.target.style.color = '#ef4444'}
-                              onMouseLeave={(e) => e.target.style.color = 'rgb(107, 114, 128)'}
+                              onMouseEnter={(e) => getEventTarget(e).style.color = '#ef4444'}
+                              onMouseLeave={(e) => getEventTarget(e).style.color = 'rgb(107, 114, 128)'}
                             >
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z" />
@@ -6355,8 +6370,8 @@ export default function AdministrarPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+              onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
             >
               ×
             </button>
@@ -6403,13 +6418,13 @@ export default function AdministrarPage() {
                   transition: 'all 0.2s'
                 }}
                 onFocus={(e) => {
-                  e.target.style.outline = 'none'
-                  e.target.style.borderColor = 'transparent'
-                  e.target.style.boxShadow = '0 0 0 2px #542583'
+                  getEventTarget(e).style.outline = 'none'
+                  getEventTarget(e).style.borderColor = 'transparent'
+                  getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db'
-                  e.target.style.boxShadow = 'none'
+                  getEventTarget(e).style.borderColor = '#d1d5db'
+                  getEventTarget(e).style.boxShadow = 'none'
                 }}
               />
             </div>
@@ -6503,8 +6518,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Cancelar
               </button>
@@ -6526,13 +6541,13 @@ export default function AdministrarPage() {
                   opacity: (!nomeBandeira.trim() || (!tiposBandeira.credito && !tiposBandeira.debito)) ? 0.6 : 1
                 }}
                 onMouseEnter={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#7209bd'
+                  if (!(e.target as HTMLButtonElement).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#542583'
+                  if (!(e.target as HTMLButtonElement).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                   }
                 }}
               >
@@ -6578,8 +6593,8 @@ export default function AdministrarPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+              onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
             >
               ×
             </button>
@@ -6626,13 +6641,13 @@ export default function AdministrarPage() {
                   transition: 'all 0.2s'
                 }}
                 onFocus={(e) => {
-                  e.target.style.outline = 'none'
-                  e.target.style.borderColor = 'transparent'
-                  e.target.style.boxShadow = '0 0 0 2px #542583'
+                  getEventTarget(e).style.outline = 'none'
+                  getEventTarget(e).style.borderColor = 'transparent'
+                  getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db'
-                  e.target.style.boxShadow = 'none'
+                  getEventTarget(e).style.borderColor = '#d1d5db'
+                  getEventTarget(e).style.boxShadow = 'none'
                 }}
               />
             </div>
@@ -6671,13 +6686,13 @@ export default function AdministrarPage() {
                   transition: 'all 0.2s'
                 }}
                 onFocus={(e) => {
-                  e.target.style.outline = 'none'
-                  e.target.style.borderColor = 'transparent'
-                  e.target.style.boxShadow = '0 0 0 2px #542583'
+                  getEventTarget(e).style.outline = 'none'
+                  getEventTarget(e).style.borderColor = 'transparent'
+                  getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db'
-                  e.target.style.boxShadow = 'none'
+                  getEventTarget(e).style.borderColor = '#d1d5db'
+                  getEventTarget(e).style.boxShadow = 'none'
                 }}
               />
             </div>
@@ -6747,8 +6762,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Cancelar
               </button>
@@ -6770,13 +6785,13 @@ export default function AdministrarPage() {
                   opacity: (!nomeMotoboy.trim() || !whatsappMotoboy.trim()) ? 0.6 : 1
                 }}
                 onMouseEnter={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#7209bd'
+                  if (!(e.target as HTMLButtonElement).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#542583'
+                  if (!(e.target as HTMLButtonElement).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                   }
                 }}
               >
@@ -6822,8 +6837,8 @@ export default function AdministrarPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+              onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
             >
               ×
             </button>
@@ -7011,8 +7026,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Fechar
               </button>
@@ -7093,8 +7108,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Cancelar
               </button>
@@ -7112,8 +7127,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#b91c1c'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#dc2626'}
               >
                 Excluir
               </button>
@@ -7162,8 +7177,8 @@ export default function AdministrarPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+              onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
             >
               ×
             </button>
@@ -7208,13 +7223,13 @@ export default function AdministrarPage() {
                     transition: 'all 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.outline = 'none'
-                    e.target.style.borderColor = 'transparent'
-                    e.target.style.boxShadow = '0 0 0 2px #542583'
+                    getEventTarget(e).style.outline = 'none'
+                    getEventTarget(e).style.borderColor = 'transparent'
+                    getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
-                    e.target.style.boxShadow = 'none'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.boxShadow = 'none'
                   }}
                 />
               </div>
@@ -7250,13 +7265,13 @@ export default function AdministrarPage() {
                       transition: 'all 0.2s'
                     }}
                     onFocus={(e) => {
-                      e.target.style.outline = 'none'
-                      e.target.style.borderColor = 'transparent'
-                      e.target.style.boxShadow = '0 0 0 2px #542583'
+                      getEventTarget(e).style.outline = 'none'
+                      getEventTarget(e).style.borderColor = 'transparent'
+                      getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = '#d1d5db'
-                      e.target.style.boxShadow = 'none'
+                      getEventTarget(e).style.borderColor = '#d1d5db'
+                      getEventTarget(e).style.boxShadow = 'none'
                     }}
                   >
                     <span>
@@ -7311,12 +7326,12 @@ export default function AdministrarPage() {
                           }}
                           onMouseEnter={(e) => {
                             if (funcaoUsuario !== funcao) {
-                              e.target.style.backgroundColor = '#f9fafb'
+                              (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (funcaoUsuario !== funcao) {
-                              e.target.style.backgroundColor = 'transparent'
+                              (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                             }
                           }}
                         >
@@ -7357,13 +7372,13 @@ export default function AdministrarPage() {
                      transition: 'all 0.2s'
                    }}
                    onFocus={(e) => {
-                     e.target.style.outline = 'none'
-                     e.target.style.borderColor = 'transparent'
-                     e.target.style.boxShadow = '0 0 0 2px #542583'
+                     getEventTarget(e).style.outline = 'none'
+                     getEventTarget(e).style.borderColor = 'transparent'
+                     getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                    }}
                    onBlur={(e) => {
-                     e.target.style.borderColor = '#d1d5db'
-                     e.target.style.boxShadow = 'none'
+                     getEventTarget(e).style.borderColor = '#d1d5db'
+                     getEventTarget(e).style.boxShadow = 'none'
                    }}
                  />
                </div>
@@ -7398,13 +7413,13 @@ export default function AdministrarPage() {
                      transition: 'all 0.2s'
                    }}
                    onFocus={(e) => {
-                     e.target.style.outline = 'none'
-                     e.target.style.borderColor = 'transparent'
-                     e.target.style.boxShadow = '0 0 0 2px #542583'
+                     getEventTarget(e).style.outline = 'none'
+                     getEventTarget(e).style.borderColor = 'transparent'
+                     getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                    }}
                    onBlur={(e) => {
-                     e.target.style.borderColor = cpfUsuario && !validarCpf(cpfUsuario) ? '#ef4444' : '#d1d5db'
-                     e.target.style.boxShadow = 'none'
+                     getEventTarget(e).style.borderColor = cpfUsuario && !validarCpf(cpfUsuario) ? '#ef4444' : '#d1d5db'
+                     getEventTarget(e).style.boxShadow = 'none'
                    }}
                  />
                  {cpfUsuario && !validarCpf(cpfUsuario) && (
@@ -7449,13 +7464,13 @@ export default function AdministrarPage() {
                     transition: 'all 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.outline = 'none'
-                    e.target.style.borderColor = 'transparent'
-                    e.target.style.boxShadow = '0 0 0 2px #542583'
+                    getEventTarget(e).style.outline = 'none'
+                    getEventTarget(e).style.borderColor = 'transparent'
+                    getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
-                    e.target.style.boxShadow = 'none'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.boxShadow = 'none'
                   }}
                 />
               </div>
@@ -7489,13 +7504,13 @@ export default function AdministrarPage() {
                        transition: 'all 0.2s'
                      }}
                      onFocus={(e) => {
-                       e.target.style.outline = 'none'
-                       e.target.style.borderColor = 'transparent'
-                       e.target.style.boxShadow = '0 0 0 2px #542583'
+                       getEventTarget(e).style.outline = 'none'
+                       getEventTarget(e).style.borderColor = 'transparent'
+                       getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                      }}
                      onBlur={(e) => {
-                       e.target.style.borderColor = senhaUsuario && senhaUsuario.length < 6 ? '#ef4444' : '#d1d5db'
-                       e.target.style.boxShadow = 'none'
+                       getEventTarget(e).style.borderColor = senhaUsuario && senhaUsuario.length < 6 ? '#ef4444' : '#d1d5db'
+                       getEventTarget(e).style.boxShadow = 'none'
                      }}
                    />
                    <button
@@ -7513,8 +7528,8 @@ export default function AdministrarPage() {
                        color: '#9ca3af',
                        transition: 'color 0.2s'
                      }}
-                     onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-                     onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+                     onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+                     onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
                    >
                      {mostrarSenha ? (
                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -7563,8 +7578,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Cancelar
               </button>
@@ -7585,13 +7600,15 @@ export default function AdministrarPage() {
                    opacity: (!nomeCompleto.trim() || !emailUsuario.trim() || !cpfUsuario.trim() || !validarCpf(cpfUsuario) || !whatsappUsuario.trim() || !senhaUsuario.trim() || senhaUsuario.length < 6) ? 0.6 : 1
                  }}
                 onMouseEnter={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#7209bd'
+                  const target = getEventTargetWithDisabled(e)
+                  if (!target.disabled) {
+                    target.style.backgroundColor = '#7209bd'
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#542583'
+                  const target = getEventTargetWithDisabled(e)
+                  if (!target.disabled) {
+                    target.style.backgroundColor = '#542583'
                   }
                 }}
               >
@@ -7642,8 +7659,8 @@ export default function AdministrarPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+              onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
             >
               ×
             </button>
@@ -7709,8 +7726,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Fechar
               </button>
@@ -7759,8 +7776,8 @@ export default function AdministrarPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+              onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
             >
               ×
             </button>
@@ -7805,13 +7822,13 @@ export default function AdministrarPage() {
                     transition: 'all 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.outline = 'none'
-                    e.target.style.borderColor = 'transparent'
-                    e.target.style.boxShadow = '0 0 0 2px #542583'
+                    getEventTarget(e).style.outline = 'none'
+                    getEventTarget(e).style.borderColor = 'transparent'
+                    getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
-                    e.target.style.boxShadow = 'none'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.boxShadow = 'none'
                   }}
                 />
               </div>
@@ -7847,13 +7864,13 @@ export default function AdministrarPage() {
                       transition: 'all 0.2s'
                     }}
                     onFocus={(e) => {
-                      e.target.style.outline = 'none'
-                      e.target.style.borderColor = 'transparent'
-                      e.target.style.boxShadow = '0 0 0 2px #542583'
+                      getEventTarget(e).style.outline = 'none'
+                      getEventTarget(e).style.borderColor = 'transparent'
+                      getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = '#d1d5db'
-                      e.target.style.boxShadow = 'none'
+                      getEventTarget(e).style.borderColor = '#d1d5db'
+                      getEventTarget(e).style.boxShadow = 'none'
                     }}
                   >
                     <span>
@@ -7908,12 +7925,12 @@ export default function AdministrarPage() {
                           }}
                           onMouseEnter={(e) => {
                             if (funcaoUsuarioEdit !== funcao) {
-                              e.target.style.backgroundColor = '#f9fafb'
+                              (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (funcaoUsuarioEdit !== funcao) {
-                              e.target.style.backgroundColor = 'transparent'
+                              (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'
                             }
                           }}
                         >
@@ -7987,13 +8004,13 @@ export default function AdministrarPage() {
                      transition: 'all 0.2s'
                    }}
                    onFocus={(e) => {
-                     e.target.style.outline = 'none'
-                     e.target.style.borderColor = 'transparent'
-                     e.target.style.boxShadow = '0 0 0 2px #542583'
+                     getEventTarget(e).style.outline = 'none'
+                     getEventTarget(e).style.borderColor = 'transparent'
+                     getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                    }}
                    onBlur={(e) => {
-                     e.target.style.borderColor = cpfUsuarioEdit && !validarCpf(cpfUsuarioEdit) ? '#ef4444' : '#d1d5db'
-                     e.target.style.boxShadow = 'none'
+                     getEventTarget(e).style.borderColor = cpfUsuarioEdit && !validarCpf(cpfUsuarioEdit) ? '#ef4444' : '#d1d5db'
+                     getEventTarget(e).style.boxShadow = 'none'
                    }}
                  />
                  {cpfUsuarioEdit && !validarCpf(cpfUsuarioEdit) && (
@@ -8038,13 +8055,13 @@ export default function AdministrarPage() {
                     transition: 'all 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.outline = 'none'
-                    e.target.style.borderColor = 'transparent'
-                    e.target.style.boxShadow = '0 0 0 2px #542583'
+                    getEventTarget(e).style.outline = 'none'
+                    getEventTarget(e).style.borderColor = 'transparent'
+                    getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
-                    e.target.style.boxShadow = 'none'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.boxShadow = 'none'
                   }}
                 />
               </div>
@@ -8071,8 +8088,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Cancelar
               </button>
@@ -8093,13 +8110,13 @@ export default function AdministrarPage() {
                    opacity: (!nomeCompletoEdit.trim() || !cpfUsuarioEdit.trim() || !validarCpf(cpfUsuarioEdit) || !whatsappUsuarioEdit.trim()) ? 0.6 : 1
                  }}
                 onMouseEnter={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#7209bd'
+                  if (!getEventTargetWithDisabled(e).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#542583'
+                  if (!getEventTargetWithDisabled(e).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                   }
                 }}
               >
@@ -8182,8 +8199,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Cancelar
               </button>
@@ -8201,8 +8218,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#b91c1c'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#dc2626'}
               >
                 Excluir
               </button>
@@ -8253,8 +8270,8 @@ export default function AdministrarPage() {
                 cursor: 'pointer',
                 transition: 'color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.color = '#6b7280'}
-              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+              onMouseEnter={(e) => getEventTarget(e).style.color = '#6b7280'}
+              onMouseLeave={(e) => getEventTarget(e).style.color = '#9ca3af'}
             >
               ×
             </button>
@@ -8365,13 +8382,13 @@ export default function AdministrarPage() {
                     transition: 'all 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.outline = 'none'
-                    e.target.style.borderColor = 'transparent'
-                    e.target.style.boxShadow = '0 0 0 2px #542583'
+                    getEventTarget(e).style.outline = 'none'
+                    getEventTarget(e).style.borderColor = 'transparent'
+                    getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
-                    e.target.style.boxShadow = 'none'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.boxShadow = 'none'
                   }}
                 />
               </div>
@@ -8403,13 +8420,13 @@ export default function AdministrarPage() {
                     transition: 'all 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.outline = 'none'
-                    e.target.style.borderColor = 'transparent'
-                    e.target.style.boxShadow = '0 0 0 2px #542583'
+                    getEventTarget(e).style.outline = 'none'
+                    getEventTarget(e).style.borderColor = 'transparent'
+                    getEventTarget(e).style.boxShadow = '0 0 0 2px #542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
-                    e.target.style.boxShadow = 'none'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.boxShadow = 'none'
                   }}
                 />
               </div>
@@ -8436,8 +8453,8 @@ export default function AdministrarPage() {
                   cursor: 'pointer',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = '#f9fafb'}
+                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'transparent'}
               >
                 Cancelar
               </button>
@@ -8458,13 +8475,13 @@ export default function AdministrarPage() {
                   opacity: (!tempoMaximo.trim() || !precoRaio.trim()) ? 0.6 : 1
                 }}
                 onMouseEnter={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#7209bd'
+                  if (!getEventTargetWithDisabled(e).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#7209bd'
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!e.target.disabled) {
-                    e.target.style.backgroundColor = '#542583'
+                  if (!getEventTargetWithDisabled(e).disabled) {
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                   }
                 }}
               >

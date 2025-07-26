@@ -38,6 +38,7 @@ interface ConfiguracaoLoja {
   nomeLoja: string
   linkPersonalizado: string
   descricao: string
+  descricaoLoja?: string
   telefone: string
   endereco: string
   horariosFuncionamento: any[]
@@ -47,7 +48,20 @@ interface ConfiguracaoLoja {
   tempoEntrega: string
   imagemLogo: string
   imagemBanner: string
+  logoUrl: string
+  bannerUrl: string
   banners: string[]
+  // Configurações de pagamento
+  aceitarDinheiro?: boolean
+  aceitarPix?: boolean
+  aceitarCredito?: boolean
+  aceitarDebito?: boolean
+  bandeirasMastercard?: { credito: boolean; debito: boolean }
+  bandeirasVisa?: { credito: boolean; debito: boolean }
+  bandeirasAmericanExpress?: { credito: boolean; debito: boolean }
+  bandeirasElo?: { credito: boolean; debito: boolean }
+  bandeirasHipercard?: { credito: boolean; debito: boolean }
+  bandeirasPersonalizadas?: Array<{ id: number; nome: string; credito: boolean; debito: boolean }>
   userId: string
   createdAt: Date
   updatedAt: Date

@@ -180,7 +180,7 @@ export function useStoreUsers() {
       return true
     } catch (error) {
       console.error('Erro ao atualizar usuario:', error)
-      toast.error('Erro ao atualizar usuario: ' + error.message)
+      toast.error('Erro ao atualizar usuario: ' + (error as Error).message)
       return false
     }
   }

@@ -1232,7 +1232,7 @@ export default function CardapioPage() {
                       height: '40px',
                       borderRadius: '100px'
                     }}
-                    onClick={openModal}
+                    onClick={() => openModal()}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="white">
                       <path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/>
@@ -1432,7 +1432,7 @@ export default function CardapioPage() {
                       height: '40px',
                       borderRadius: '100px'
                     }}
-                    onClick={openModal}
+                    onClick={() => openModal()}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="white">
                       <path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/>

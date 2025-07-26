@@ -322,7 +322,7 @@ export default function CuponsPage() {
                   tipoDesconto === 'brinde' ? descricaoCupom : valorDesconto,
         valorMinimo: valorMinimo ? `R$ ${valorMinimo}` : 'R$ 0,00',
         validade: cupomComDataValidade ? dataExpiracao : 'Não aplicável',
-        status: cupomAtivo ? 'Ativo' : 'Inativo',
+        status: (cupomAtivo ? 'Ativo' : 'Inativo') as 'Ativo' | 'Inativo',
         usos: isEditing ? cupomEmEdicao.usos : 0,
         maxUsos: limitarTotalUsos ? parseInt(quantidadeMaximaUsos, 10) : 0,
         primeiraCompra: cupomPrimeiraCompra,

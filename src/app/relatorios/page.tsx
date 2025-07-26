@@ -333,7 +333,7 @@ export default function RelatoriosPage() {
     // Dados de produtos (agrupados por produto)
     const produtosMap = new Map()
     pedidosFiltrados.forEach(pedido => {
-      const produtos = pedido.itens || pedido.produtos || []
+      const produtos = pedido.itens || []
       produtos.forEach((item: any) => {
         const nomeProduto = item.nome || item.name || 'Produto'
         if (!produtosMap.has(nomeProduto)) {
@@ -987,7 +987,7 @@ export default function RelatoriosPage() {
                                       boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                                     }}
                                     formatter={(value: any, name: any) => {
-                                        const percentage = ((Number(value) / totalPagamentos) * 100).toFixed(1);
+                                        const percentage = ((Number(value) / totalPagamentosReais) * 100).toFixed(1);
                                         return [`R$ ${Number(value).toFixed(2)} (${percentage}%)`, name];
                                     }}
                                   />

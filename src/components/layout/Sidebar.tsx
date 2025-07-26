@@ -212,12 +212,14 @@ export function Sidebar() {
                 width: '100%'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f4c430'
-                e.target.style.transform = 'translateY(-1px)'
+                const target = e.target as HTMLElement
+                target.style.backgroundColor = '#f4c430'
+                target.style.transform = 'translateY(-1px)'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#fdb827'
-                e.target.style.transform = 'translateY(0)'
+                const target = e.target as HTMLElement
+                target.style.backgroundColor = '#fdb827'
+                target.style.transform = 'translateY(0)'
               }}
               title="Visualizar cardápio público"
             >
@@ -258,12 +260,14 @@ export function Sidebar() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.opacity = '1'
-                e.target.style.backgroundColor = 'rgba(156, 163, 175, 0.3)'
+                const target = e.target as HTMLElement
+                target.style.opacity = '1'
+                target.style.backgroundColor = 'rgba(156, 163, 175, 0.3)'
               }}
               onMouseLeave={(e) => {
-                e.target.style.opacity = '0.8'
-                e.target.style.backgroundColor = 'rgba(156, 163, 175, 0.2)'
+                const target = e.target as HTMLElement
+                target.style.opacity = '0.8'
+                target.style.backgroundColor = 'rgba(156, 163, 175, 0.2)'
               }}
               title="Ir para configurações da loja"
             >

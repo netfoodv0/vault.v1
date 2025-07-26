@@ -512,10 +512,10 @@ export default function AtendimentoPage() {
                         transition: 'background-color 0.2s'
                       }}
                       onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#7209bd'
+                        (e.target as HTMLElement).style.backgroundColor = '#7209bd'
                       }}
                       onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#542583'
+                        (e.target as HTMLElement).style.backgroundColor = '#542583'
                       }}
                     >
                       Salvar configuração

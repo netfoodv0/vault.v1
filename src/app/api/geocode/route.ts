@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
         throw new Error('API não disponível')
       }
     } catch (apiError) {
-      console.log('API Geocode - Erro na API do Google Maps, usando coordenadas aproximadas:', apiError.message)
+      console.log('API Geocode - Erro na API do Google Maps, usando coordenadas aproximadas:', (apiError as Error).message)
       
       // Usar coordenadas aproximadas
       const coordsAproximadas = encontrarCoordenadasAproximadas(address)
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('API Geocode - Erro interno:', error)
     return NextResponse.json(
-      { error: 'Erro interno do servidor', details: error.message },
+      { error: 'Erro interno do servidor', details: (error as Error).message },
       { status: 500 }
     )
   }

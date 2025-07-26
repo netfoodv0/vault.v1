@@ -152,6 +152,7 @@ export const useEntregas = () => {
         status: 'pendente' as const,
         coordenadas: [-46.6915, -23.5462] as [number, number],
         formaPagamento: 'PIX',
+        horarioPedido: new Date().toISOString(),
         itens: [
           { nome: 'Pizza Margherita', quantidade: 1, preco: 35.50 },
           { nome: 'Refrigerante 2L', quantidade: 1, preco: 10.00 }
@@ -167,6 +168,7 @@ export const useEntregas = () => {
         motoboyId: 'motoboy1',
         coordenadas: [-46.6563, -23.5614] as [number, number],
         formaPagamento: 'Cartão de Crédito',
+        horarioPedido: new Date().toISOString(),
         itens: [
           { nome: 'Pizza Calabresa', quantidade: 1, preco: 42.80 },
           { nome: 'Coca-Cola 600ml', quantidade: 2, preco: 10.00 }
@@ -182,6 +184,7 @@ export const useEntregas = () => {
         motoboyId: 'motoboy2',
         coordenadas: [-46.6692, -23.5649] as [number, number],
         formaPagamento: 'Dinheiro',
+        horarioPedido: new Date().toISOString(),
         itens: [
           { nome: 'Pizza Portuguesa', quantidade: 1, preco: 48.90 },
           { nome: 'Pizza Doce', quantidade: 1, preco: 30.00 }
@@ -197,6 +200,7 @@ export const useEntregas = () => {
         motoboyId: 'motoboy3',
         coordenadas: [-46.6480, -23.5576] as [number, number],
         formaPagamento: 'PIX',
+        horarioPedido: new Date().toISOString(),
         itens: [
           { nome: 'Pizza Mozzarella', quantidade: 1, preco: 32.50 },
           { nome: 'Água 500ml', quantidade: 1, preco: 2.00 }
@@ -210,6 +214,7 @@ export const useEntregas = () => {
         status: 'cancelado' as const,
         coordenadas: [-46.6603, -23.5580] as [number, number],
         formaPagamento: 'Cartão de Débito',
+        horarioPedido: new Date().toISOString(),
         observacoes: 'Cliente cancelou devido ao tempo de entrega',
         itens: [
           { nome: 'Pizza Quatro Queijos', quantidade: 1, preco: 52.30 }

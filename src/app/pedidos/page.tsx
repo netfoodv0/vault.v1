@@ -10,6 +10,11 @@ import { usePedidoSequencia } from '@/hooks/usePedidoSequencia'
 import { addDoc, collection, Timestamp, query, where, orderBy, limit, getDocs, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 
+// Função utilitária para corrigir tipagem de eventos
+const getEventTarget = (e: React.MouseEvent | React.FocusEvent): HTMLElement => {
+  return e.target as HTMLElement
+}
+
 export default function PedidosPage() {
   const pathname = usePathname()
   const isPedidosActive = pathname === '/pedidos'
@@ -17,7 +22,7 @@ export default function PedidosPage() {
   const isAdministrarLojaActive = pathname === '/administrar'
   const { signOut, user } = useAuth()
   const { categories: firebaseCategories, products: firebaseProducts, additionals: savedAdditionals, loading: cardapioLoading } = useCardapio()
-  const { gerarProximoNumero, formatarNumeroPedido } = usePedidoSequencia()
+  const { gerarProximoNumero } = usePedidoSequencia()
   
   // Carregar pedidos em produção do Firebase quando a página carregar
   useEffect(() => {
@@ -227,43 +232,49 @@ export default function PedidosPage() {
   // Estados para gerenciar pedidos em produção
   const [pedidosEmProducao, setPedidosEmProducao] = useState<Array<{
     id: string;
-    mesaNumero: number;
-    tipo: 'Delivery' | 'Balcão' | 'Retirada';
-    cliente: string;
-    valor: string;
-    tempo: string;
-    status: string;
-    formaPagamento: string;
-    mostrarTroco: boolean;
+    mesaNumero?: number;
+    tipo?: 'Delivery' | 'Balcão' | 'Retirada';
+    cliente?: string;
+    valor?: string;
+    tempo?: string;
+    status?: string;
+    formaPagamento?: string;
+    mostrarTroco?: boolean;
     dataCriacao: Date;
+    numeroPedido?: number | null;
+    dadosCompletos?: any;
   }>>([])
 
   // Estados para gerenciar pedidos em análise
   const [pedidosEmAnalise, setPedidosEmAnalise] = useState<Array<{
     id: string;
-    mesaNumero: number;
-    tipo: 'Delivery' | 'Balcão' | 'Retirada';
-    cliente: string;
-    valor: string;
-    tempo: string;
-    status: string;
-    formaPagamento: string;
-    mostrarTroco: boolean;
+    mesaNumero?: number;
+    tipo?: 'Delivery' | 'Balcão' | 'Retirada';
+    cliente?: string;
+    valor?: string;
+    tempo?: string;
+    status?: string;
+    formaPagamento?: string;
+    mostrarTroco?: boolean;
     dataCriacao: Date;
+    numeroPedido?: number | null;
+    dadosCompletos?: any;
   }>>([])
 
   // Estados para gerenciar pedidos em entrega
   const [pedidosEmEntrega, setPedidosEmEntrega] = useState<Array<{
     id: string;
-    mesaNumero: number;
-    tipo: 'Delivery' | 'Balcão' | 'Retirada';
-    cliente: string;
-    valor: string;
-    tempo: string;
-    status: string;
-    formaPagamento: string;
-    mostrarTroco: boolean;
+    mesaNumero?: number;
+    tipo?: 'Delivery' | 'Balcão' | 'Retirada';
+    cliente?: string;
+    valor?: string;
+    tempo?: string;
+    status?: string;
+    formaPagamento?: string;
+    mostrarTroco?: boolean;
     dataCriacao: Date;
+    numeroPedido?: number | null;
+    dadosCompletos?: any;
   }>>([])
 
   // Estados do modal de confirmação de cancelamento
@@ -1251,7 +1262,7 @@ export default function PedidosPage() {
         const pedidosEmPreparoTemp: any[] = []
         const pedidosEmEntregaTemp: any[] = []
         
-        pedidosOrdenados.forEach(pedido => {
+        pedidosOrdenados.forEach((pedido: any) => {
           // Determinar forma de pagamento baseada nos dados do pedido
           let formaPagamento = 'Dinheiro'
           if (pedido.dadosCompletos) {
@@ -1269,12 +1280,12 @@ export default function PedidosPage() {
           const pedidoFormatado = {
             id: pedido.id,
             mesaNumero: pedido.mesaNumero || Math.floor(Math.random() * 50) + 1, // Manter mesaNumero original
-            numeroPedido: pedido.numeroPedido || null, // Número sequencial do pedido
+            numeroPedido: pedido.numeroPedido?.toString() || null, // Número sequencial do pedido
             tipo: pedido.tipo || 'Delivery',
             cliente: pedido.cliente || 'Cliente',
             valor: pedido.valor || 'R$ 0,00',
             tempo: calcularTempoDecorrido(pedido.dataCriacao),
-            status: (pedido as any).status || 'Em análise',
+            status: pedido.status || 'Em análise',
             formaPagamento: formaPagamento,
             mostrarTroco: true,
             dadosCompletos: pedido.dadosCompletos || null,
@@ -2046,18 +2057,18 @@ export default function PedidosPage() {
 
   // Componente do Card da Mesa (clonado)
   const MesaCard = ({ mesaNumero, tipo, cliente, valor, tempo, status, formaPagamento = 'Dinheiro', mostrarTroco = true, id, dadosCompletos, dataCriacao, numeroPedido }: {
-    mesaNumero: number;
-    tipo: 'Delivery' | 'Balcão' | 'Retirada';
-    cliente: string;
-    valor: string;
-    tempo: string;
-    status: string;
+    mesaNumero: number | undefined;
+    tipo: 'Delivery' | 'Balcão' | 'Retirada' | undefined;
+    cliente: string | undefined;
+    valor: string | undefined;
+    tempo: string | undefined;
+    status: string | undefined;
     formaPagamento?: string;
     mostrarTroco?: boolean;
     id?: string;
     dadosCompletos?: any;
     dataCriacao?: Date;
-    numeroPedido?: string;
+    numeroPedido?: number | string | null;
   }) => {
     // Função para determinar se o pedido está pago ou a cobrar
     const getStatusPagamento = () => {
@@ -2516,7 +2527,7 @@ export default function PedidosPage() {
               <input
                 type="text"
                 placeholder="Buscar (Nome, telefone, ou numero do pedido)"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="pl-10 pr-4 py-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 style={{
                   backgroundColor: 'white',
                   color: '#6b7280',
@@ -2643,7 +2654,7 @@ export default function PedidosPage() {
                   id={pedido.id}
                   dadosCompletos={pedido.dadosCompletos}
                   dataCriacao={pedido.dataCriacao}
-                  numeroPedido={pedido.numeroPedido}
+                  numeroPedido={pedido.numeroPedido?.toString()}
                 />
               </div>
             ))}
@@ -2686,7 +2697,7 @@ export default function PedidosPage() {
                   id={pedido.id}
                   dadosCompletos={pedido.dadosCompletos}
                   dataCriacao={pedido.dataCriacao}
-                  numeroPedido={pedido.numeroPedido}
+                  numeroPedido={pedido.numeroPedido?.toString()}
                 />
               </div>
             ))}
@@ -2729,7 +2740,7 @@ export default function PedidosPage() {
                   id={pedido.id}
                   dadosCompletos={pedido.dadosCompletos}
                   dataCriacao={pedido.dataCriacao}
-                  numeroPedido={pedido.numeroPedido}
+                  numeroPedido={pedido.numeroPedido?.toString()}
                 />
               </div>
             ))}
@@ -2775,7 +2786,6 @@ export default function PedidosPage() {
               height: '80px',
               borderTopLeftRadius: '8px',
               borderBottomLeftRadius: '8px',
-              border: 'none',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -2788,10 +2798,10 @@ export default function PedidosPage() {
               border: '1px solid rgba(130, 10, 209, 0.2)'
             }}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = 'rgba(130, 10, 209, 0.4)'
+              (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(130, 10, 209, 0.4)'
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'rgba(130, 10, 209, 0.3)'
+              (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(130, 10, 209, 0.3)'
             }}
           >
             ×
@@ -3142,7 +3152,7 @@ export default function PedidosPage() {
                           )}
 
                           {/* Linha divisória sólida após os adicionais */}
-                          {item.additionals?.length > 0 && (
+                          {item.additionals && item.additionals.length > 0 && (
                             <div style={{ borderBottom: '1px solid #E1E1E1' }}></div>
                           )}
                         </div>
@@ -3208,10 +3218,10 @@ export default function PedidosPage() {
                         height: '50px'
                       }}
                       onMouseEnter={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#5a8a32'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#5a8a32'
                       }}
                       onMouseLeave={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#6ca23d'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#6ca23d'
                       }}
                     >
                       DINHEIRO
@@ -3241,10 +3251,10 @@ export default function PedidosPage() {
                         height: '50px'
                       }}
                       onMouseEnter={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#5a8a32'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#5a8a32'
                       }}
                       onMouseLeave={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#6ca23d'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#6ca23d'
                       }}
                     >
                       DÉBITO
@@ -3271,18 +3281,14 @@ export default function PedidosPage() {
                         textAlign: 'center'
                       }}
                       onMouseEnter={(e) => {
-                        const target = e.target as HTMLElement
-                        if (target && target.style) {
-                          target.style.backgroundColor = '#5a8a32'
-                          target.style.color = 'white'
-                        }
+                        const target = e.target as HTMLButtonElement
+                        target.style.backgroundColor = '#5a8a32'
+                        target.style.color = 'white'
                       }}
                       onMouseLeave={(e) => {
-                        const target = e.target as HTMLElement
-                        if (target && target.style) {
-                          target.style.backgroundColor = observacao ? '#6ca23d' : 'white'
-                          target.style.color = observacao ? 'white' : '#6ca23d'
-                        }
+                        const target = e.target as HTMLButtonElement
+                        target.style.backgroundColor = observacao ? '#6ca23d' : 'white'
+                        target.style.color = observacao ? 'white' : '#6ca23d'
                       }}
                     >
                       {observacao ? 'OBSERVAÇÃO ADICIONADA' : 'ADICIONAR OBSERVAÇÃO'}
@@ -3315,10 +3321,10 @@ export default function PedidosPage() {
                         height: '50px'
                       }}
                       onMouseEnter={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#5a8a32'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#5a8a32'
                       }}
                       onMouseLeave={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#6ca23d'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#6ca23d'
                       }}
                     >
                       PIX
@@ -3348,10 +3354,10 @@ export default function PedidosPage() {
                         height: '50px'
                       }}
                       onMouseEnter={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#5a8a32'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#5a8a32'
                       }}
                       onMouseLeave={(e) => {
-                        (e.target as HTMLElement).style.backgroundColor = '#6ca23d'
+                        (e.target as HTMLButtonElement).style.backgroundColor = '#6ca23d'
                       }}
                     >
                       CRÉDITO
@@ -3381,18 +3387,14 @@ export default function PedidosPage() {
                         height: '50px'
                       }}
                       onMouseEnter={(e) => {
-                        const target = e.target as HTMLElement
-                        if (target && target.style) {
-                          target.style.backgroundColor = '#6ca23d'
-                          target.style.color = 'white'
-                        }
+                        const target = e.target as HTMLButtonElement
+                        target.style.backgroundColor = '#6ca23d'
+                        target.style.color = 'white'
                       }}
                       onMouseLeave={(e) => {
-                        const target = e.target as HTMLElement
-                        if (target && target.style) {
-                          target.style.backgroundColor = 'white'
-                          target.style.color = '#6ca23d'
-                        }
+                        const target = e.target as HTMLButtonElement
+                        target.style.backgroundColor = 'white'
+                        target.style.color = '#6ca23d'
                       }}
                     >
                       ACR/DES
@@ -3447,11 +3449,11 @@ export default function PedidosPage() {
                           }}
                           onFocus={(e) => {
                             if (!semCliente) {
-                              e.target.style.borderColor = '#542583'
+                              getEventTarget(e).style.borderColor = '#542583'
                             }
                           }}
                           onBlur={(e) => {
-                            e.target.style.borderColor = '#d1d5db'
+                            getEventTarget(e).style.borderColor = '#d1d5db'
                           }}
                         />
                         {!semCliente && mostrarErroTelefone && telefoneCliente.trim() === '' && (
@@ -3527,11 +3529,11 @@ export default function PedidosPage() {
                           }}
                           onFocus={(e) => {
                             if (!semCliente) {
-                              e.target.style.borderColor = '#542583'
+                              getEventTarget(e).style.borderColor = '#542583'
                             }
                           }}
                           onBlur={(e) => {
-                            e.target.style.borderColor = '#d1d5db'
+                            getEventTarget(e).style.borderColor = '#d1d5db'
                           }}
                         />
                         {!semCliente && mostrarErroNome && nomeCliente.trim() === '' && (
@@ -3611,10 +3613,10 @@ export default function PedidosPage() {
                           marginLeft: 'auto'
                         }}
                         onMouseEnter={(e) => {
-                          (e.target as HTMLElement).style.backgroundColor = '#4a1f6b'
+                          (e.target as HTMLButtonElement).style.backgroundColor = '#4a1f6b'
                         }}
                         onMouseLeave={(e) => {
-                          (e.target as HTMLElement).style.backgroundColor = '#542583'
+                          (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                         }}
                       >
                         {selectedFormaEntrega ? 'Trocar' : '+'}
@@ -3893,10 +3895,10 @@ export default function PedidosPage() {
                     padding: '0 12px'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = '#4a1f6b'
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#4a1f6b'
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = '#542583'
+                    (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                   }}
                 >
                   <span>Finalizar</span>
@@ -3928,12 +3930,14 @@ export default function PedidosPage() {
                       padding: '0 12px'
             }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#dc2626'
-                      e.target.style.color = 'white'
+                      const target = e.target as HTMLButtonElement
+                      target.style.backgroundColor = '#dc2626'
+                      target.style.color = 'white'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = 'white'
-                      e.target.style.color = '#dc2626'
+                      const target = e.target as HTMLButtonElement
+                      target.style.backgroundColor = 'white'
+                      target.style.color = '#dc2626'
                     }}
                   >
                     <span>Cancelar</span>
@@ -3961,10 +3965,10 @@ export default function PedidosPage() {
                       padding: '0 12px'
                     }}
                     onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#4a1f6b'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#4a1f6b'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#542583'
+                      (e.target as HTMLButtonElement).style.backgroundColor = '#542583'
                     }}
                   >
                     <span>Cancelar</span>
@@ -4078,7 +4082,7 @@ export default function PedidosPage() {
               </h3>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {selectedProduct.additionals.map((additionalId, index) => {
+                {selectedProduct.additionals.map((additionalId: string, index: number) => {
                   const additional = firebaseProducts.find(p => p.id === additionalId) || 
                                    savedAdditionals?.find(a => a.id === additionalId);
                   
@@ -4616,10 +4620,10 @@ export default function PedidosPage() {
                     transition: 'border-color 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#542583'
+                    getEventTarget(e).style.borderColor = '#542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
                   }}
                 />
               </div>
@@ -4654,8 +4658,8 @@ export default function PedidosPage() {
                       cursor: 'pointer',
                       transition: 'border-color 0.2s'
                     }}
-                    onMouseEnter={(e) => e.target.style.borderColor = '#542583'}
-                    onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onMouseEnter={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                    onMouseLeave={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                   >
                     <span>{pagamentoDinheiroTemp === 'agora' ? 'Agora' : 'Na entrega'}</span>
                     <svg 
@@ -4711,12 +4715,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoDinheiroTemp !== 'agora') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoDinheiroTemp !== 'agora') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -4741,12 +4745,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoDinheiroTemp !== 'entrega') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoDinheiroTemp !== 'entrega') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -4782,10 +4786,10 @@ export default function PedidosPage() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f9fafb'
+                getEventTarget(e).style.backgroundColor = '#f9fafb'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white'
+                getEventTarget(e).style.backgroundColor = 'white'
               }}
             >
               Cancelar
@@ -4823,10 +4827,10 @@ export default function PedidosPage() {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#4a1f6b'
+                getEventTarget(e).style.backgroundColor = '#4a1f6b'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#542583'
+                getEventTarget(e).style.backgroundColor = '#542583'
               }}
             >
               Confirmar
@@ -4919,12 +4923,12 @@ export default function PedidosPage() {
                 }}
                 onMouseEnter={(e) => {
                   if (abaAtiva !== 'acrescimo') {
-                    e.target.style.backgroundColor = '#f9fafb'
+                    getEventTarget(e).style.backgroundColor = '#f9fafb'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (abaAtiva !== 'acrescimo') {
-                    e.target.style.backgroundColor = 'white'
+                    getEventTarget(e).style.backgroundColor = 'white'
                   }
                 }}
               >
@@ -4947,12 +4951,12 @@ export default function PedidosPage() {
                 }}
                 onMouseEnter={(e) => {
                   if (abaAtiva !== 'desconto') {
-                    e.target.style.backgroundColor = '#f9fafb'
+                    getEventTarget(e).style.backgroundColor = '#f9fafb'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (abaAtiva !== 'desconto') {
-                    e.target.style.backgroundColor = 'white'
+                    getEventTarget(e).style.backgroundColor = 'white'
                   }
                 }}
               >
@@ -4997,10 +5001,10 @@ export default function PedidosPage() {
                       transition: 'border-color 0.2s'
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = '#542583'
+                      getEventTarget(e).style.borderColor = '#542583'
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = '#d1d5db'
+                      getEventTarget(e).style.borderColor = '#d1d5db'
                     }}
                   />
                 </div>
@@ -5039,10 +5043,10 @@ export default function PedidosPage() {
                       transition: 'border-color 0.2s'
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = '#542583'
+                      getEventTarget(e).style.borderColor = '#542583'
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = '#d1d5db'
+                      getEventTarget(e).style.borderColor = '#d1d5db'
                     }}
                   />
                 </div>
@@ -5107,10 +5111,10 @@ export default function PedidosPage() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f9fafb'
+                getEventTarget(e).style.backgroundColor = '#f9fafb'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white'
+                getEventTarget(e).style.backgroundColor = 'white'
               }}
             >
               Cancelar
@@ -5130,10 +5134,10 @@ export default function PedidosPage() {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#4a1f6b'
+                getEventTarget(e).style.backgroundColor = '#4a1f6b'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#542583'
+                getEventTarget(e).style.backgroundColor = '#542583'
               }}
             >
               Confirmar
@@ -5438,10 +5442,10 @@ export default function PedidosPage() {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#4a1f6b'
+                getEventTarget(e).style.backgroundColor = '#4a1f6b'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#542583'
+                getEventTarget(e).style.backgroundColor = '#542583'
               }}
             >
               Fechar
@@ -5563,10 +5567,10 @@ export default function PedidosPage() {
                     transition: 'border-color 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#542583'
+                    getEventTarget(e).style.borderColor = '#542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
                   }}
                 />
               </div>
@@ -5601,8 +5605,8 @@ export default function PedidosPage() {
                       cursor: 'pointer',
                       transition: 'border-color 0.2s'
                     }}
-                    onMouseEnter={(e) => e.target.style.borderColor = '#542583'}
-                    onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onMouseEnter={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                    onMouseLeave={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                   >
                     <span>{pagamentoDebitoTemp === 'agora' ? 'Agora' : 'Na entrega'}</span>
                     <svg 
@@ -5658,12 +5662,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoDebitoTemp !== 'agora') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoDebitoTemp !== 'agora') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -5688,12 +5692,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoDebitoTemp !== 'entrega') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoDebitoTemp !== 'entrega') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -5732,10 +5736,10 @@ export default function PedidosPage() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f9fafb'
+                getEventTarget(e).style.backgroundColor = '#f9fafb'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white'
+                getEventTarget(e).style.backgroundColor = 'white'
               }}
             >
               Cancelar
@@ -5769,10 +5773,10 @@ export default function PedidosPage() {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#4a1f6b'
+                getEventTarget(e).style.backgroundColor = '#4a1f6b'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#542583'
+                getEventTarget(e).style.backgroundColor = '#542583'
               }}
             >
               Confirmar
@@ -5894,10 +5898,10 @@ export default function PedidosPage() {
                     transition: 'border-color 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#542583'
+                    getEventTarget(e).style.borderColor = '#542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
                   }}
                 />
               </div>
@@ -5932,8 +5936,8 @@ export default function PedidosPage() {
                       cursor: 'pointer',
                       transition: 'border-color 0.2s'
                     }}
-                    onMouseEnter={(e) => e.target.style.borderColor = '#542583'}
-                    onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onMouseEnter={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                    onMouseLeave={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                   >
                     <span>{pagamentoCreditoTemp === 'agora' ? 'Agora' : 'Na entrega'}</span>
                     <svg 
@@ -5989,12 +5993,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoCreditoTemp !== 'agora') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoCreditoTemp !== 'agora') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -6019,12 +6023,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoCreditoTemp !== 'entrega') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoCreditoTemp !== 'entrega') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -6064,10 +6068,10 @@ export default function PedidosPage() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f9fafb'
+                getEventTarget(e).style.backgroundColor = '#f9fafb'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white'
+                getEventTarget(e).style.backgroundColor = 'white'
               }}
             >
               Cancelar
@@ -6101,10 +6105,10 @@ export default function PedidosPage() {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#4a1f6b'
+                getEventTarget(e).style.backgroundColor = '#4a1f6b'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#542583'
+                getEventTarget(e).style.backgroundColor = '#542583'
               }}
             >
               Confirmar
@@ -6224,10 +6228,10 @@ export default function PedidosPage() {
                     transition: 'border-color 0.2s'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#542583'
+                    getEventTarget(e).style.borderColor = '#542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
                   }}
                 />
               </div>
@@ -6262,8 +6266,8 @@ export default function PedidosPage() {
                       cursor: 'pointer',
                       transition: 'border-color 0.2s'
                     }}
-                    onMouseEnter={(e) => e.target.style.borderColor = '#542583'}
-                    onMouseLeave={(e) => e.target.style.borderColor = '#d1d5db'}
+                    onMouseEnter={(e) => getEventTarget(e).style.borderColor = '#542583'}
+                    onMouseLeave={(e) => getEventTarget(e).style.borderColor = '#d1d5db'}
                   >
                     <span>{pagamentoPixTemp === 'agora' ? 'Agora' : 'Na entrega'}</span>
                     <svg 
@@ -6319,12 +6323,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoPixTemp !== 'agora') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoPixTemp !== 'agora') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -6349,12 +6353,12 @@ export default function PedidosPage() {
                         }}
                         onMouseEnter={(e) => {
                           if (pagamentoPixTemp !== 'entrega') {
-                            e.target.style.backgroundColor = '#f9fafb'
+                            getEventTarget(e).style.backgroundColor = '#f9fafb'
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (pagamentoPixTemp !== 'entrega') {
-                            e.target.style.backgroundColor = 'transparent'
+                            getEventTarget(e).style.backgroundColor = 'transparent'
                           }
                         }}
                       >
@@ -6394,10 +6398,10 @@ export default function PedidosPage() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f9fafb'
+                getEventTarget(e).style.backgroundColor = '#f9fafb'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white'
+                getEventTarget(e).style.backgroundColor = 'white'
               }}
             >
               Cancelar
@@ -6440,10 +6444,10 @@ export default function PedidosPage() {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#4a1f6b'
+                getEventTarget(e).style.backgroundColor = '#4a1f6b'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#542583'
+                getEventTarget(e).style.backgroundColor = '#542583'
               }}
             >
               Confirmar
@@ -6526,12 +6530,12 @@ export default function PedidosPage() {
                 }}
                 onMouseEnter={(e) => {
                   if (selectedFormaEntrega !== 'E') {
-                    e.target.style.backgroundColor = '#f9fafb'
+                    getEventTarget(e).style.backgroundColor = '#f9fafb'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (selectedFormaEntrega !== 'E') {
-                    e.target.style.backgroundColor = 'white'
+                    getEventTarget(e).style.backgroundColor = 'white'
                   }
                 }}
               >
@@ -6553,12 +6557,12 @@ export default function PedidosPage() {
                 }}
                 onMouseEnter={(e) => {
                   if (selectedFormaEntrega !== 'R') {
-                    e.target.style.backgroundColor = '#f9fafb'
+                    getEventTarget(e).style.backgroundColor = '#f9fafb'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (selectedFormaEntrega !== 'R') {
-                    e.target.style.backgroundColor = 'white'
+                    getEventTarget(e).style.backgroundColor = 'white'
                   }
                 }}
               >
@@ -6580,12 +6584,12 @@ export default function PedidosPage() {
                 }}
                 onMouseEnter={(e) => {
                   if (selectedFormaEntrega !== 'C') {
-                    e.target.style.backgroundColor = '#f9fafb'
+                    getEventTarget(e).style.backgroundColor = '#f9fafb'
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (selectedFormaEntrega !== 'C') {
-                    e.target.style.backgroundColor = 'white'
+                    getEventTarget(e).style.backgroundColor = 'white'
                   }
                 }}
               >
@@ -6801,10 +6805,10 @@ export default function PedidosPage() {
                         transition: 'border-color 0.2s'
                       }}
                       onFocus={(e) => {
-                        e.target.style.borderColor = '#542583'
+                        getEventTarget(e).style.borderColor = '#542583'
                       }}
                       onBlur={(e) => {
-                        e.target.style.borderColor = '#d1d5db'
+                        getEventTarget(e).style.borderColor = '#d1d5db'
                       }}
                     />
                   </div>
@@ -6835,10 +6839,10 @@ export default function PedidosPage() {
                         transition: 'border-color 0.2s'
                       }}
                       onFocus={(e) => {
-                        e.target.style.borderColor = '#542583'
+                        getEventTarget(e).style.borderColor = '#542583'
                       }}
                       onBlur={(e) => {
-                        e.target.style.borderColor = '#d1d5db'
+                        getEventTarget(e).style.borderColor = '#d1d5db'
                       }}
                     />
                   </div>
@@ -6870,10 +6874,10 @@ export default function PedidosPage() {
                           transition: 'border-color 0.2s'
                         }}
                         onFocus={(e) => {
-                          e.target.style.borderColor = '#542583'
+                          getEventTarget(e).style.borderColor = '#542583'
                         }}
                         onBlur={(e) => {
-                          e.target.style.borderColor = '#d1d5db'
+                          getEventTarget(e).style.borderColor = '#d1d5db'
                         }}
                       />
                     </div>
@@ -6902,10 +6906,10 @@ export default function PedidosPage() {
                           transition: 'border-color 0.2s'
                         }}
                         onFocus={(e) => {
-                          e.target.style.borderColor = '#542583'
+                          getEventTarget(e).style.borderColor = '#542583'
                         }}
                         onBlur={(e) => {
-                          e.target.style.borderColor = '#d1d5db'
+                          getEventTarget(e).style.borderColor = '#d1d5db'
                         }}
                       />
                     </div>
@@ -6938,10 +6942,10 @@ export default function PedidosPage() {
                           transition: 'border-color 0.2s'
                         }}
                         onFocus={(e) => {
-                          e.target.style.borderColor = '#542583'
+                          getEventTarget(e).style.borderColor = '#542583'
                         }}
                         onBlur={(e) => {
-                          e.target.style.borderColor = '#d1d5db'
+                          getEventTarget(e).style.borderColor = '#d1d5db'
                         }}
                       />
                     </div>
@@ -6970,10 +6974,10 @@ export default function PedidosPage() {
                           transition: 'border-color 0.2s'
                         }}
                         onFocus={(e) => {
-                          e.target.style.borderColor = '#542583'
+                          getEventTarget(e).style.borderColor = '#542583'
                         }}
                         onBlur={(e) => {
-                          e.target.style.borderColor = '#d1d5db'
+                          getEventTarget(e).style.borderColor = '#d1d5db'
                         }}
                       />
                     </div>
@@ -7010,10 +7014,10 @@ export default function PedidosPage() {
                         transition: 'border-color 0.2s'
                       }}
                       onFocus={(e) => {
-                        e.target.style.borderColor = '#542583'
+                        getEventTarget(e).style.borderColor = '#542583'
                       }}
                       onBlur={(e) => {
-                        e.target.style.borderColor = '#d1d5db'
+                        getEventTarget(e).style.borderColor = '#d1d5db'
                       }}
                     />
                   </div>
@@ -7061,10 +7065,10 @@ export default function PedidosPage() {
                   transition: 'background-color 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#4a1f6b'
+                  getEventTarget(e).style.backgroundColor = '#4a1f6b'
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#542583'
+                  getEventTarget(e).style.backgroundColor = '#542583'
                 }}
               >
                 {selectedFormaEntrega === 'E' && enderecoSelecionado ? 'Confirmar endereço' : 'Adicionar forma de entrega'}
@@ -7085,10 +7089,10 @@ export default function PedidosPage() {
                     transition: 'all 0.2s'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = '#f9fafb'
+                    getEventTarget(e).style.backgroundColor = '#f9fafb'
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = 'white'
+                    getEventTarget(e).style.backgroundColor = 'white'
                   }}
                 >
                   Cancelar
@@ -7139,10 +7143,10 @@ export default function PedidosPage() {
                     transition: 'background-color 0.2s'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = '#4a1f6b'
+                    getEventTarget(e).style.backgroundColor = '#4a1f6b'
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = '#542583'
+                    getEventTarget(e).style.backgroundColor = '#542583'
                   }}
                 >
                   Salvar Endereço
@@ -7240,10 +7244,10 @@ export default function PedidosPage() {
                     fontFamily: 'inherit'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#542583'
+                    getEventTarget(e).style.borderColor = '#542583'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db'
+                    getEventTarget(e).style.borderColor = '#d1d5db'
                   }}
                 />
               </div>
@@ -7275,10 +7279,10 @@ export default function PedidosPage() {
                 transition: 'all 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f9fafb'
+                getEventTarget(e).style.backgroundColor = '#f9fafb'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'white'
+                getEventTarget(e).style.backgroundColor = 'white'
               }}
             >
               Cancelar
@@ -7301,10 +7305,10 @@ export default function PedidosPage() {
                 transition: 'background-color 0.2s'
               }}
               onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#4a1f6b'
+                getEventTarget(e).style.backgroundColor = '#4a1f6b'
               }}
               onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#542583'
+                getEventTarget(e).style.backgroundColor = '#542583'
               }}
             >
               Confirmar
@@ -7394,10 +7398,10 @@ export default function PedidosPage() {
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f9fafb'
+                  getEventTarget(e).style.backgroundColor = '#f9fafb'
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'white'
+                  getEventTarget(e).style.backgroundColor = 'white'
                 }}
               >
                 Não, manter
@@ -7417,10 +7421,10 @@ export default function PedidosPage() {
                   transition: 'background-color 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#4a1f6b'
+                  getEventTarget(e).style.backgroundColor = '#4a1f6b'
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#542583'
+                  getEventTarget(e).style.backgroundColor = '#542583'
                 }}
               >
                 Sim, limpar
@@ -7511,10 +7515,10 @@ export default function PedidosPage() {
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#f9fafb'
+                  getEventTarget(e).style.backgroundColor = '#f9fafb'
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'white'
+                  getEventTarget(e).style.backgroundColor = 'white'
                 }}
               >
                 Não, manter
@@ -7534,10 +7538,10 @@ export default function PedidosPage() {
                   transition: 'background-color 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#b91c1c'
+                  getEventTarget(e).style.backgroundColor = '#b91c1c'
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#dc2626'
+                  getEventTarget(e).style.backgroundColor = '#dc2626'
                 }}
               >
                 Sim, cancelar
@@ -8107,8 +8111,8 @@ export default function PedidosPage() {
                 cursor: 'pointer',
                 transition: 'background-color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              onMouseEnter={(e) => getEventTarget(e).style.backgroundColor = '#f9fafb'}
+              onMouseLeave={(e) => getEventTarget(e).style.backgroundColor = 'transparent'}
             >
               Fechar
             </button>
